@@ -1,0 +1,3385 @@
+---
+swagger: "2.0"
+info:
+  description: "Whats App API"
+  version: "1.0.0"
+  title: "Whats App API"
+  contact:
+    name: "Irene-Maria Tabakis"
+    email: "irma.tabakis@gmail.com"
+host: "virtserver.swaggerhub.com"
+basePath: "/asterakia/WhatsApp/1.0.0"
+tags:
+- name: "user"
+- name: "auth"
+- name: "media"
+- name: "privatechat"
+- name: "groupchat"
+- name: "message"
+- name: "call"
+- name: "chat"
+- name: "relationship"
+- name: "socket"
+schemes:
+- "https"
+paths:
+  /users:
+    post:
+      tags:
+      - "user"
+      summary: "Create a user object using a phone number."
+      description: " "
+      operationId: "usersPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Create a user object. Must have the parameter of phone umber\
+          \ in order to send the verifcation code."
+        required: false
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "A user's phone number is added to the user object. The other\
+            \ fields will be null. The other fields will receive a value after the\
+            \ user verifies the phone number. The variable name of the response is\
+            \ user."
+          schema:
+            $ref: "#/definitions/User"
+        500:
+          description: "The phone number was not provided."
+      x-swagger-router-controller: "User"
+  /users/{userId}:
+    get:
+      tags:
+      - "user"
+      summary: "Get info on one specific user."
+      operationId: "usersUserIdGET"
+      parameters:
+      - name: "currentUserId"
+        in: "query"
+        description: "When querying for a specific user to display user info."
+        required: false
+        type: "string"
+      - name: "userId"
+        in: "path"
+        description: "The userId of a specific user."
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns one user. The variable name of the response is user."
+          schema:
+            $ref: "#/definitions/inline_response_200"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+    put:
+      tags:
+      - "user"
+      summary: "Update a user"
+      description: "Add the mediaId in the body for the user's avatar to be updated"
+      operationId: "usersUserIdPUT"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The id of the user is used to target the specific user the developer\
+          \ wishes to edit. The variable name of the response is users."
+        required: true
+        type: "string"
+        minimum: 1
+      - in: "body"
+        name: "body"
+        description: "Edit the user with values found in the request body."
+        required: false
+        schema:
+          $ref: "#/definitions/body"
+      responses:
+        200:
+          description: "A user object will be returned."
+          schema:
+            $ref: "#/definitions/User"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete a user."
+      operationId: "usersUserIdDELETE"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "Delete a user. Place the ID of the user you wish to delete in\
+          \ the path."
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "A user deleted."
+          schema:
+            type: "string"
+            example: "User 'ID number' was deleted"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/friends:
+    get:
+      tags:
+      - "user"
+      summary: "Get all the friend's belonging to this user."
+      operationId: "usersUserIdFriendsGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "Get all the friend's belonging to this user."
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns all user's who are friend with the specified userId\
+            \ given. The variable name of the response is users."
+          schema:
+            $ref: "#/definitions/User"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/blocked:
+    get:
+      tags:
+      - "user"
+      summary: "Get all the blocked users belonging to a specifc user."
+      operationId: "usersUserIdBlockedGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The id of the user is needed to query the blocked user's of\
+          \ this specifc individual."
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns a list of all the blocked user's relating to this\
+            \ user. The variable name of the response is users."
+          schema:
+            $ref: "#/definitions/User"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/messages:
+    get:
+      tags:
+      - "user"
+      summary: "Get all messages belonging to a specific user."
+      operationId: "usersUserIdMessagesGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "All the messages this user has sent will be returned. The\
+            \ variable name of the response is messages."
+          schema:
+            $ref: "#/definitions/Message"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/messages/unread:
+    get:
+      tags:
+      - "user"
+      summary: "Get all unread messages belonging to a user."
+      operationId: "usersUserIdMessagesUnreadGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Each key in the JSON object returned is the chat number assoicated\
+            \ with the unread messages located in the array. The variable name of\
+            \ the response is messages."
+          schema:
+            $ref: "#/definitions/inline_response_200_1"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/messages/delivered:
+    get:
+      tags:
+      - "user"
+      summary: "Get all delivered messages."
+      operationId: "usersUserIdMessagesDeliveredGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Each key in the JSON object returned is the chat number assoicated\
+            \ with the delivered messages located in the array. The variable name\
+            \ of the response is messages."
+          schema:
+            $ref: "#/definitions/inline_response_200_2"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/messages/seen:
+    get:
+      tags:
+      - "user"
+      summary: "Get all messages belonging to a user that have been seen by another\
+        \ user/ other users."
+      operationId: "usersUserIdMessagesSeenGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Each key in the JSON object returned is the chat number assoicated\
+            \ with the messages that have been seen located in the array. The variable\
+            \ name of the response is messages."
+          schema:
+            $ref: "#/definitions/inline_response_200_3"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/messages/favorite:
+    get:
+      tags:
+      - "user"
+      summary: "Get all favorite messages belonging to a user."
+      operationId: "usersUserIdMessagesFavoriteGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "All favorited messages returned. The variable name of the\
+            \ response is favoriteMessages."
+          schema:
+            $ref: "#/definitions/inline_response_200_4"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/calls:
+    get:
+      tags:
+      - "user"
+      summary: "Get all calls made by a specific user."
+      operationId: "usersUserIdCallsGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "All the calls this user has made will be returned. The variable\
+            \ name of the response is calls"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/calls/nonanswered:
+    get:
+      tags:
+      - "user"
+      summary: "Get all non answered calls belonging to a user."
+      operationId: "usersUserIdCallsNonansweredGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Each key in the JSON object returned is the chat number assoicated\
+            \ with the non answered calls located in the array. The variable name\
+            \ of the response is calls."
+          schema:
+            $ref: "#/definitions/inline_response_200_5"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/calls/answered:
+    get:
+      tags:
+      - "user"
+      summary: "Get all answered calls."
+      operationId: "usersUserIdCallsAnsweredGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Each key in the JSON object returned is the chat number assoicated\
+            \ with the call located in the array. The variable name of the response\
+            \ is calls."
+          schema:
+            $ref: "#/definitions/inline_response_200_6"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/private&group_chats:
+    get:
+      tags:
+      - "user"
+      summary: "Get both private and group chats and calls the user is a participant\
+        \ of"
+      operationId: "usersUserIdPrivategroup_chatsGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "All the private and group chats will be returned with the\
+            \ chat type equivlant to \"private\" or \"group\". There will also be\
+            \ a type to every object, the type can be equivlant to \"unreadAndFavorite,\"\
+            \ \"unread\", \"favorite\",\"readandNonfavorite\", \"delivered\", \"deliveredAndseen\"\
+            , \"answered\" or \"nonanswered\"."
+          schema:
+            $ref: "#/definitions/inline_response_200_7"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/leave/{chatId}:
+    put:
+      tags:
+      - "user"
+      summary: "This route is envoked when a user leaves a chat chat"
+      operationId: "usersUserIdLeaveChatIdPUT"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns the userChats object. The response variable name will\
+            \ be userChats"
+          schema:
+            $ref: "#/definitions/UserChats"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/check_contacts_use_whatsApp:
+    post:
+      tags:
+      - "user"
+      summary: "Check if contacts are WhatApp's users"
+      operationId: "usersUserIdCheck_contacts_use_whatsAppPOST"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "returnUserInfo"
+        in: "query"
+        description: "if returnUserInfo is set to true, all the info about the user\
+          \ will be sent back."
+        required: false
+        type: "string"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/body_1"
+      responses:
+        200:
+          description: "Returns the users which use WhatApp and the invalid numbers\
+            \ the client sent in. If returnUserInfo is set to true, then the entire\
+            \ user object will be sent in"
+          schema:
+            $ref: "#/definitions/inline_response_200_8"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/invite_to_WhatsApp:
+    post:
+      tags:
+      - "user"
+      summary: "Invite a contact to download WhatsApp via SMS"
+      operationId: "usersUserIdInvite_to_WhatsAppPOST"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/body_2"
+      responses:
+        200:
+          description: "Sends a message to the numbers provided."
+          schema:
+            $ref: "#/definitions/inline_response_200_9"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /users/{userId}/notifications/global:
+    patch:
+      tags:
+      - "user"
+      summary: "Edit the global settings for notifications"
+      operationId: "usersUserIdNotificationsGlobalPATCH"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "unread"
+        in: "query"
+        description: "This query parameter can either be set to true or false"
+        required: false
+        type: "string"
+      - name: "delivered"
+        in: "query"
+        description: "This query parameter can either be set to true or false"
+        required: false
+        type: "string"
+      - name: "seen"
+        in: "query"
+        description: "This query parameter can either be set to true or false"
+        required: false
+        type: "string"
+      - name: "nonanswered"
+        in: "query"
+        description: "This query parameter can either be set to true or false"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "On sucess, the updated user will be returned. The name of\
+            \ the return object is user"
+          schema:
+            $ref: "#/definitions/User"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "User"
+  /auth/verify:
+    post:
+      tags:
+      - "auth"
+      summary: "The user will input verifaction code and if it is the correct code,\
+        \ a JSON web token will be returned"
+      operationId: "authVerifyPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Verify the passcode the user was sent."
+        required: false
+        schema:
+          $ref: "#/definitions/body_3"
+      responses:
+        200:
+          description: "The JSON web token is returned. This will be used for authenticating\
+            \ API routes"
+          schema:
+            $ref: "#/definitions/inline_response_200_10"
+      x-swagger-router-controller: "Auth"
+  /auth/resend:
+    post:
+      tags:
+      - "auth"
+      summary: "Resend another verifcation code to the user"
+      operationId: "authResendPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Send another verication code"
+        required: false
+        schema:
+          $ref: "#/definitions/body_4"
+      responses:
+        200:
+          description: "Returns the hashed passcode and the expiration date of the\
+            \ passcode. The variable name of the response is user"
+          schema:
+            $ref: "#/definitions/inline_response_200_11"
+      x-swagger-router-controller: "Auth"
+  /media:
+    post:
+      tags:
+      - "media"
+      summary: "Upload a file"
+      operationId: "mediaPOST"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "file"
+        in: "formData"
+        description: "The file which is being uploaded"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Sucessfully uploaded the file. The variable name of the response\
+            \ is media."
+          schema:
+            $ref: "#/definitions/inline_response_200_12"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Media"
+  /media/shared/{userId1}/{userId2}:
+    get:
+      tags:
+      - "media"
+      summary: "Get all media which two user's have shared between each other"
+      operationId: "mediaSharedUserId1UserId2GET"
+      parameters:
+      - name: "userId1"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "userId2"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns an array of all media two users have shared between\
+            \ themeselves"
+          schema:
+            $ref: "#/definitions/inline_response_200_13"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Media"
+  /media/{mediaId}:
+    delete:
+      tags:
+      - "media"
+      summary: "Delete a media object."
+      operationId: "mediaMediaIdDELETE"
+      parameters:
+      - name: "mediaId"
+        in: "path"
+        description: "The ID of the specific media object the developer wishes to\
+          \ delete"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "The media objected was successfully deleted"
+          schema:
+            $ref: "#/definitions/Media"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Media"
+  /privateChats:
+    post:
+      tags:
+      - "privatechat"
+      summary: "Create a private chat between two users"
+      operationId: "privateChatsPOST"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIds"
+        in: "formData"
+        description: "Only two userIds can be sent for this endpoint due to the fact\
+          \ that you are creating a private chat"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "Created a private chat. The userIds are now being sent to\
+            \ the socket functions to check if the user's are online. The variable\
+            \ name of the response is chat"
+          schema:
+            $ref: "#/definitions/Chat"
+        400:
+          description: "Two userIds must be sent to the server for this endpoint to\
+            \ be reach"
+          schema:
+            type: "string"
+            example: "Two userIds must be sent to the server"
+      security:
+      - Authorization: []
+      - Socket: []
+      x-swagger-router-controller: "Privatechat"
+  /privateChats/{chatId}:
+    delete:
+      tags:
+      - "privatechat"
+      summary: "Delete a private chat"
+      operationId: "privateChatsChatIdDELETE"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        description: "The ID of a specific chat"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "The chat was deleted"
+          schema:
+            $ref: "#/definitions/Chat"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Privatechat"
+  /privateChats/{chatId}/favorite:
+    put:
+      tags:
+      - "privatechat"
+      summary: "Favorite a specific private chat"
+      operationId: "privateChatsChatIdFavoritePUT"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/body_5"
+      responses:
+        200:
+          description: "Returns the specific chat chat which is now one of the user's\
+            \ favorite chats. The variable name of the response is chat"
+          schema:
+            $ref: "#/definitions/Chat"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Privatechat"
+  /privateChats/{chatId}/user/{userId}/messages:
+    get:
+      tags:
+      - "privatechat"
+      summary: "Get 40 messages belonging to a private chat."
+      operationId: "privateChatsChatIdUserUserIdMessagesGET"
+      parameters:
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "messageId"
+        in: "query"
+        description: "Include this query parameter when you would like to get the\
+          \ next 40 messages following a specific message. If this query parameter\
+          \ is not included, you will get the 40 newest messages in order"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Returns all the messages associated with a specific private\
+            \ chat. The messages will be divided into two sections -- unread & read.\
+            \ In each section, the messages will be ordered from newest to oldest.\
+            \ The variable name of the response is messages. allMessages will be ordered\
+            \ from oldest to newest (for you Sung!). The client can figure out which\
+            \ messages are unread by comparing the createdAt attribute with the last_time_user_entered\
+            \ variable. This route will trigger the \"read-receipts\" socket function\
+            \ for the specific user querying for message history"
+          schema:
+            $ref: "#/definitions/inline_response_200_14"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Privatechat"
+  /groupChats:
+    post:
+      tags:
+      - "groupchat"
+      summary: "Create a groupChat"
+      operationId: "groupChatsPOST"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIds"
+        in: "formData"
+        description: "An array of userIds. Can also be just one userId (in an array\
+          \ with the name userIds) if only the admin (creator) is the only user in\
+          \ the group when it is created"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "name"
+        in: "formData"
+        description: "The name of the group chat"
+        required: false
+        type: "string"
+      - name: "adminId"
+        in: "formData"
+        description: "The ID of the user who is creating the group chat"
+        required: true
+        type: "string"
+      - name: "mediaId"
+        in: "formData"
+        description: "If the groupChat has an image assoicated with it, the media\
+          \ Id can be used to create that image"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Returns the chat which was just created. The variable name\
+            \ of the response is chat."
+          schema:
+            $ref: "#/definitions/inline_response_200_15"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Groupchat"
+  /groupChats/{groupChatId}:
+    put:
+      tags:
+      - "groupchat"
+      summary: "Edit the details of a groupChat"
+      operationId: "groupChatsGroupChatIdPUT"
+      parameters:
+      - name: "groupChatId"
+        in: "path"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body_6"
+      responses:
+        200:
+          description: "Returns the updated groupChat object on success"
+          schema:
+            $ref: "#/definitions/inline_response_200_16"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Groupchat"
+  /groupChats/{chatId}/join:
+    put:
+      tags:
+      - "groupchat"
+      summary: "Add user(s) to a groupChat"
+      operationId: "groupChatsChatIdJoinPUT"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIds"
+        in: "formData"
+        description: "An array of userIds. Can also be just one userId (in an array\
+          \ with the name userIds) if only the admin (creator) is the only user in\
+          \ the group when it is created"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns the chat object in which the user(s) just joined.\
+            \ The variable name of the response is chat."
+          schema:
+            $ref: "#/definitions/Chat"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Groupchat"
+  /groupChats/{chatId}/user/{userId}/messages:
+    get:
+      tags:
+      - "groupchat"
+      summary: "Get 40 messages belonging to a group chat"
+      operationId: "groupChatsChatIdUserUserIdMessagesGET"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "messageId"
+        in: "query"
+        description: "Include this query parameter when you would like to get the\
+          \ next 40 messages following a specific message. If this query parameter\
+          \ is not included, you will get the 40 newest messages in order"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Returns all the messages associated with a specific group\
+            \ chat. The messages will be divided into two sections -- unread & read.\
+            \ In each section, the messages will be ordered from newest to oldest.\
+            \ The variable name of the response is messages. allMessages will be ordered\
+            \ from oldest to newest (for you Sung!). The client can figure out which\
+            \ messages are unread by comparing the createdAt attribute with the last_time_user_entered\
+            \ variable. This route will trigger the \"read-receipts\" socket function\
+            \ for the specific user querying for message history"
+          schema:
+            $ref: "#/definitions/inline_response_200_17"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Groupchat"
+  /groupChats/{chatId}/favorite:
+    put:
+      tags:
+      - "groupchat"
+      summary: "Favorite a specific group chat"
+      operationId: "groupChatsChatIdFavoritePUT"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/body_7"
+      responses:
+        200:
+          description: "Returns the chat which was just favorited. The variable name\
+            \ of the response is chat."
+          schema:
+            $ref: "#/definitions/Chat"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Groupchat"
+  /messages/string:
+    post:
+      tags:
+      - "message"
+      summary: "Create a message with no image attached to the message"
+      operationId: "messagesStringPOST"
+      parameters:
+      - name: "post"
+        in: "query"
+        description: " "
+        required: false
+        type: "boolean"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body_8"
+      responses:
+        200:
+          description: "On success, the messageInfo object will be sent to the socket\
+            \ functions. The variable name of the response is messageInfo"
+          schema:
+            $ref: "#/definitions/Message"
+        400:
+          description: "This error can occur if the chatId or userID does not exist,\
+            \ if the user is not a participant in the chat, or if the two users have\
+            \ a relationship of blocked."
+      security:
+      - Authorization: []
+      - Socket: []
+      x-swagger-router-controller: "Message"
+  /messages/media:
+    post:
+      tags:
+      - "message"
+      summary: "Send a message with a file attatched"
+      operationId: "messagesMediaPOST"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "file"
+        in: "formData"
+        description: " "
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "message"
+        in: "formData"
+        required: false
+        type: "string"
+        minimum: 1
+      - name: "userId"
+        in: "formData"
+        required: true
+        type: "string"
+      - name: "chatId"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Returns the messageInfo object. This object will be sent to\
+            \ the socket functions for further processing. The variable name of the\
+            \ response is messageInfo"
+          schema:
+            $ref: "#/definitions/Message"
+        400:
+          description: "This error can occur if the chatId or userId does not exist,\
+            \ if the user is not a participant in the chat, or if the two users have\
+            \ a relationship of blocked"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Message"
+  /messages/file:
+    post:
+      tags:
+      - "message"
+      summary: "Send a message with a file or files"
+      operationId: "messagesFilePOST"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "file"
+        in: "formData"
+        description: "Even if only one file is being, must be sent in an array. This\
+          \ format allows the server to easily handle when multiple files are being\
+          \ sent"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "message"
+        in: "formData"
+        required: false
+        type: "string"
+        minimum: 1
+      - name: "userId"
+        in: "formData"
+        required: true
+        type: "string"
+      - name: "chatId"
+        in: "formData"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Returns the messageInfo object. This object will be sent to\
+            \ the socket functions for further processing. The variable name of the\
+            \ response is messageInfo"
+          schema:
+            $ref: "#/definitions/Message"
+        400:
+          description: "This error can occur if the chatId or userId does not exist,\
+            \ if the user is not a participant in the chat, or if the two users have\
+            \ a relationship of blocked"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Message"
+  /messages/{messageId}:
+    put:
+      tags:
+      - "message"
+      summary: "Edit (patch) a particular message"
+      operationId: "messagesMessageIdPUT"
+      parameters:
+      - name: "messageId"
+        in: "path"
+        description: "The ID of the message one wishes to edit (patch)"
+        required: true
+        type: "string"
+        minimum: 1
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body_9"
+      responses:
+        200:
+          description: "Will return the updated message on success. The variable name\
+            \ of the response is translatedMessages"
+          schema:
+            $ref: "#/definitions/Message"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Message"
+  /messages/{messageId}/user/{userId}:
+    delete:
+      tags:
+      - "message"
+      summary: "delete a message"
+      operationId: "messagesMessageIdUserUserIdDELETE"
+      parameters:
+      - name: "messageId"
+        in: "path"
+        description: "The ID of the message one wishes to edit (patch)"
+        required: true
+        type: "string"
+        minimum: 1
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "The message which was deleted will be return as the response.\
+            \ The variable name of the response is message. The response message,\
+            \ will indicate if the message was favorited or unfavorited"
+          schema:
+            $ref: "#/definitions/inline_response_200_18"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Message"
+  /chat/{chatId}:
+    get:
+      tags:
+      - "chat"
+      summary: "Get a chat by ID"
+      operationId: "chatChatIdGET"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns a chat object and the response variable name is also\
+            \ chat"
+          schema:
+            $ref: "#/definitions/Chat"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Chat"
+  /chat/{chatId}/file:
+    get:
+      tags:
+      - "chat"
+      summary: "Get all files belonging to a specific chat"
+      operationId: "chatChatIdFileGET"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns the files which were shared in a chat"
+          schema:
+            $ref: "#/definitions/inline_response_200_19"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Chat"
+  /chat/{chatId}/media:
+    get:
+      tags:
+      - "chat"
+      summary: "Returns all the media files shared in a chat"
+      operationId: "chatChatIdMediaGET"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+        minimum: 1
+      responses:
+        200:
+          description: "Returns all the media files shared in a chat"
+          schema:
+            $ref: "#/definitions/inline_response_200_20"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Chat"
+  /chat/{chatId}/user/{userId}/notifications:
+    put:
+      tags:
+      - "chat"
+      summary: "Edit the notifications a user can receive from a chat"
+      operationId: "chatChatIdUserUserIdNotificationsPUT"
+      parameters:
+      - name: "chatId"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "userId"
+        in: "path"
+        required: true
+        type: "string"
+      - name: "user_added_notifications"
+        in: "query"
+        required: false
+        type: "boolean"
+      - name: "message_notifications"
+        in: "query"
+        required: false
+        type: "boolean"
+      responses:
+        200:
+          description: "Returns the update userChat which includes the attribitues\
+            \ message_notifications and user_added_notifications which indicated the\
+            \ specific nofitifcation options for a specifc chat"
+          schema:
+            $ref: "#/definitions/inline_response_200_21"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Chat"
+  /relationships:
+    post:
+      tags:
+      - "relationship"
+      summary: "Create a relationship (blocked or friends) between two users. Even\
+        \ if a relationship is being updated, use this route"
+      operationId: "relationshipsPOST"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body_10"
+      responses:
+        200:
+          description: "The relationship was successfully created. The variable name\
+            \ of the response is relationship"
+          schema:
+            $ref: "#/definitions/Relationship"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Relationship"
+  /relationships/{userId}:
+    put:
+      tags:
+      - "relationship"
+      summary: "Change a relationship from friends to blocked or from blocked back\
+        \ to friends"
+      operationId: "relationshipsUserIdPUT"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The id of the other user"
+        required: true
+        type: "string"
+        minimum: 1
+      - in: "body"
+        name: "body"
+        description: "Send over the userId's (user_id_1 & user_id_2) and the status"
+        required: false
+        schema:
+          $ref: "#/definitions/Relationship"
+      responses:
+        200:
+          description: "The new relationship will be returned. The variable name of\
+            \ the response is relationship"
+          schema:
+            $ref: "#/definitions/Relationship"
+      security:
+      - Authorization: []
+      x-swagger-router-controller: "Relationship"
+  /call/starts:
+    post:
+      tags:
+      - "call"
+      summary: "New call starts."
+      operationId: "callStartsPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "post"
+        in: "query"
+        description: "If post is set to true, a call starts that needs to be added\
+          \ to the DB."
+        required: true
+        type: "boolean"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body_11"
+      responses:
+        200:
+          description: "On success, the messageInfo object will be sent to the socket\
+            \ functions. The variable name of the response is messageInfo"
+          schema:
+            $ref: "#/definitions/Message"
+        400:
+          description: "This error can occur if the chatId or userID does not exist,\
+            \ if the user is not a participant in the chat, or if the two users have\
+            \ a relationship of blocked"
+      security:
+      - Authorization: []
+      - Socket: []
+      x-swagger-router-controller: "Call"
+  /call/ends:
+    post:
+      tags:
+      - "call"
+      summary: "New call starts."
+      operationId: "callEndsPOST"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "post"
+        in: "query"
+        description: "If post is set to true, a call starts that needs to be added\
+          \ to the DB."
+        required: true
+        type: "boolean"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/body_12"
+      responses:
+        200:
+          description: "On success, the messageInfo object will be sent to the socketfunctions.\
+            \ The variable name of the response is messageInfo"
+          schema:
+            $ref: "#/definitions/Message"
+        400:
+          description: "This error can occur if the chatId or userID does not exist,\
+            \ if the user is not a participant in the chat, or if the two users have\
+            \ a relationship of blocked"
+      security:
+      - Authorization: []
+      - Socket: []
+      x-swagger-router-controller: "Call"
+  /socket/user-entered-WhatsApp:
+    post:
+      tags:
+      - "socket"
+      summary: "When a user enters WhatsApp, emit the socket function 'user-entered-WhatsApp'.\
+        \ The server will then emit new-and-updated-data"
+      operationId: "socketUser_entered_WhatsAppPOST"
+      parameters: []
+      responses:
+        200:
+          description: "The object returned will have the following properties. Also,\
+            \ each object will have a flag value, the flag can either be isNew or\
+            \ isUpdated"
+          schema:
+            $ref: "#/definitions/inline_response_200_22"
+        500:
+          description: "When an error occuring while retrieving any section of the\
+            \ data, I will send back an error within the object"
+          schema:
+            $ref: "#/definitions/inline_response_500"
+      x-swagger-router-controller: "Socket"
+securityDefinitions:
+  Authorization:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+  Socket:
+    type: "apiKey"
+    name: "socket"
+    in: "header"
+definitions:
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+        description: "Unique identifer"
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+      country_code:
+        type: "string"
+      email:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+      avatar:
+        type: "string"
+      verified:
+        type: "boolean"
+      passcode:
+        type: "string"
+      passcode_expiration:
+        type: "string"
+      socket_id:
+        type: "string"
+    example:
+      country_code: "country_code"
+      socket_id: "socket_id"
+      passcode_expiration: "passcode_expiration"
+      phone: "phone"
+      verified: true
+      last_name: "last_name"
+      id: 0.80082819046101150206595775671303272247314453125
+      avatar: "avatar"
+      first_name: "first_name"
+      email: "email"
+      profile_picture_string: "profile_picture_string"
+      passcode: "passcode"
+  Relationship:
+    type: "object"
+    properties:
+      request_sender:
+        type: "string"
+        description: "foreign key of one user"
+      request_receiver:
+        type: "string"
+        description: "foreign key of another user"
+      status:
+        type: "string"
+        description: "Either friends or blocked"
+    example:
+      request_sender: "request_sender"
+      request_receiver: "request_receiver"
+      status: "status"
+  Media:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      media_file_string:
+        type: "string"
+        description: "In the media table, there is a getter function which retrieves\
+          \ the AWS bucket file which this media object is assoicated with"
+      media_file:
+        type: "string"
+        description: "The URL which the file can be uploaded from"
+      user_id:
+        type: "number"
+      groupChatId:
+        type: "number"
+    example:
+      media_file_string: "media_file_string"
+      groupChatId: 1.46581298050294517310021547018550336360931396484375
+      user_id: 6.02745618307040320615897144307382404804229736328125
+      id: 0.80082819046101150206595775671303272247314453125
+      media_file: "media_file"
+  Chat:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      groupChat:
+        type: "boolean"
+        description: "Set to true if the chat is a group chat"
+      privateChat:
+        type: "boolean"
+        description: "Set tot true if the chat is a private chat"
+      participantsId:
+        type: "array"
+        example:
+        - "22"
+        - "33"
+        description: "An array of the user Ids participating in the chat"
+        items:
+          type: "integer"
+      last_activity:
+        type: "string"
+      last_activity_in_associated_channel_event_or_groupChat:
+        type: "string"
+    example:
+      last_activity: "last_activity"
+      groupChat: true
+      privateChat: true
+      id: 0.80082819046101150206595775671303272247314453125
+      participantsId:
+      - "22"
+      - "33"
+      last_activity_in_associated_channel_event_or_groupChat: "last_activity_in_associated_channel_event_or_groupChat"
+  UserChats:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+      chatId:
+        type: "string"
+      favorite:
+        type: "boolean"
+      last_time_in_chat:
+        type: "string"
+      unread_messages:
+        type: "boolean"
+      entered_chat_quantity:
+        type: "number"
+      current_chat:
+        type: "boolean"
+      message_notifications:
+        type: "boolean"
+      user_added_notifications:
+        type: "boolean"
+      messages_not_to_display:
+        type: "array"
+        example:
+        - 50
+        - 100
+        - 150
+        items:
+          type: "number"
+          description: "The message ID's which will not be displayed to a user because\
+            \ they were self-destructing messages"
+    example:
+      last_time_in_chat: "last_time_in_chat"
+      chatId: "chatId"
+      entered_chat_quantity: 0.80082819046101150206595775671303272247314453125
+      current_chat: true
+      messages_not_to_display:
+      - 50
+      - 100
+      - 150
+      unread_messages: true
+      user_added_notifications: true
+      userId: "userId"
+      favorite: true
+      message_notifications: true
+  Message:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      message:
+        type: "string"
+      chatId:
+        type: "string"
+      userId:
+        type: "string"
+      type:
+        type: "string"
+        example: "media, string"
+      createdAt:
+        type: "string"
+        description: "The date time of when the message was created (sent)"
+      name:
+        type: "string"
+        description: "The full name of the user who sent the message"
+      post:
+        type: "boolean"
+      user:
+        $ref: "#/definitions/inline_response_200_7_message_user"
+      GroupChat:
+        $ref: "#/definitions/Message_GroupChat"
+      mediaArray:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_7_message_mediaArray"
+      files:
+        type: "array"
+        items:
+          $ref: "#/definitions/Message_files"
+    example:
+      createdAt: "createdAt"
+      GroupChat:
+        socket_id: "socket_id"
+        verified: true
+        last_name: "last_name"
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+        country_code: "country_code"
+        passcode_expiration: "passcode_expiration"
+        phone: "phone"
+        id: 6.02745618307040320615897144307382404804229736328125
+        position: "{}"
+        first_name: "first_name"
+        email: "email"
+        passcode: "passcode"
+      chatId: "chatId"
+      post: true
+      name: "name"
+      files:
+      - s3_url: "s3_url"
+        file_string: "file_string"
+      - s3_url: "s3_url"
+        file_string: "file_string"
+      id: 0.80082819046101150206595775671303272247314453125
+      message: "message"
+      type: "media, string"
+      userId: "userId"
+      user:
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+      mediaArray:
+      - media_file_string: "media_file_string"
+        media_file: "media_file"
+      - media_file_string: "media_file_string"
+        media_file: "media_file"
+  GroupChat:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      chatId:
+        type: "integer"
+      name:
+        type: "string"
+      adminId:
+        type: "string"
+        description: "The admin is the creator of the group chat. This individual\
+          \ has the power to kick users out of the group chat as well"
+      createdAt:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+      avatar:
+        type: "string"
+        description: "The url which links to amazon s3 for the groupChat profile image"
+    example:
+      createdAt: "createdAt"
+      chatId: 6
+      name: "name"
+      adminId: "adminId"
+      id: 0
+      avatar: "avatar"
+      profile_picture_string: "profile_picture_string"
+  inline_response_200_user:
+    properties:
+      id:
+        type: "number"
+        description: "Unique identifer."
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+      country_code:
+        type: "string"
+      email:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+      avatar:
+        type: "string"
+      verified:
+        type: "boolean"
+      passcode:
+        type: "string"
+      passcode_expiration:
+        type: "string"
+      socket_id:
+        type: "string"
+      relationship_status:
+        type: "string"
+        example: "no_relationship, blocked, friends"
+    example:
+      socket_id: "socket_id"
+      verified: true
+      last_name: "last_name"
+      avatar: "avatar"
+      profile_picture_string: "profile_picture_string"
+      country_code: "country_code"
+      passcode_expiration: "passcode_expiration"
+      relationship_status: "no_relationship, blocked, friends"
+      phone: "phone"
+      id: 6.02745618307040320615897144307382404804229736328125
+      first_name: "first_name"
+      email: "email"
+      passcode: "passcode"
+  inline_response_200:
+    properties:
+      number_of_favorited_messages:
+        type: "number"
+        description: "If currentUserId is null, the number of favorited messages will\
+          \ be the total number of favorited messages of the queried user. If currentUserId\
+          \ is not null, this value will be the number of favorited messages the currentUserId\
+          \ favorited of the user being queried."
+      user:
+        $ref: "#/definitions/inline_response_200_user"
+    example:
+      number_of_favorited_messages: 0.80082819046101150206595775671303272247314453125
+      user:
+        socket_id: "socket_id"
+        verified: true
+        last_name: "last_name"
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+        country_code: "country_code"
+        passcode_expiration: "passcode_expiration"
+        relationship_status: "no_relationship, blocked, friends"
+        phone: "phone"
+        id: 6.02745618307040320615897144307382404804229736328125
+        first_name: "first_name"
+        email: "email"
+        passcode: "passcode"
+  body:
+    type: "object"
+    properties:
+      mediaId:
+        type: "string"
+      id:
+        type: "number"
+        description: "Unique identifer"
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+      country_code:
+        type: "string"
+      email:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+      avatar:
+        type: "string"
+      verified:
+        type: "boolean"
+      passcode:
+        type: "string"
+      passcode_expiration:
+        type: "string"
+      socket_id:
+        type: "string"
+  inline_response_200_1_unreadMessages:
+    properties:
+      id:
+        type: "number"
+      message:
+        type: "string"
+      userId:
+        type: "number"
+      chatId:
+        type: "number"
+      mediaArray:
+        type: "array"
+        items:
+          type: "string"
+      type:
+        type: "string"
+      createdAt:
+        type: "string"
+      userAvatar:
+        type: "string"
+    example:
+      createdAt: "createdAt"
+      chatId: 1.46581298050294517310021547018550336360931396484375
+      userAvatar: "userAvatar"
+      id: 0.80082819046101150206595775671303272247314453125
+      message: "message"
+      type: "type"
+      userId: 6.02745618307040320615897144307382404804229736328125
+      mediaArray:
+      - "mediaArray"
+      - "mediaArray"
+  inline_response_200_1:
+    properties:
+      unreadMessages:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_1_unreadMessages"
+    example:
+      unreadMessages:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+  inline_response_200_2:
+    properties:
+      deliveredMessages:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_1_unreadMessages"
+    example:
+      deliveredMessages:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+  inline_response_200_3:
+    properties:
+      seenMessages:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_1_unreadMessages"
+    example:
+      seenMessages:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+  inline_response_200_4:
+    properties:
+      favoriteMessages:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_1_unreadMessages"
+    example:
+      favoriteMessages:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+  inline_response_200_5_nonAnsweredCalls:
+    properties:
+      id:
+        type: "number"
+      userId:
+        type: "number"
+      chatId:
+        type: "number"
+      createdAt:
+        type: "string"
+      userAvatar:
+        type: "string"
+    example:
+      createdAt: "createdAt"
+      chatId: 1.46581298050294517310021547018550336360931396484375
+      userAvatar: "userAvatar"
+      id: 0.80082819046101150206595775671303272247314453125
+      userId: 6.02745618307040320615897144307382404804229736328125
+  inline_response_200_5:
+    properties:
+      nonAnsweredCalls:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_5_nonAnsweredCalls"
+    example:
+      nonAnsweredCalls:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        userId: 6.02745618307040320615897144307382404804229736328125
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        userId: 6.02745618307040320615897144307382404804229736328125
+  inline_response_200_6:
+    properties:
+      answeredCalls:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_5_nonAnsweredCalls"
+    example:
+      answeredCalls:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        userId: 6.02745618307040320615897144307382404804229736328125
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        userAvatar: "userAvatar"
+        id: 0.80082819046101150206595775671303272247314453125
+        userId: 6.02745618307040320615897144307382404804229736328125
+  inline_response_200_7_user:
+    properties:
+      avatar:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+    example:
+      last_name: "last_name"
+      avatar: "avatar"
+      first_name: "first_name"
+      profile_picture_string: "profile_picture_string"
+  inline_response_200_7_groupChatInfo:
+    properties:
+      avatar:
+        type: "string"
+      id:
+        type: "number"
+      name:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+      adminId:
+        type: "number"
+      chatId:
+        type: "number"
+    example:
+      chatId: 5.962133916683182377482808078639209270477294921875
+      name: "name"
+      adminId: 1.46581298050294517310021547018550336360931396484375
+      avatar: "avatar"
+      id: 6.02745618307040320615897144307382404804229736328125
+      profile_picture_string: "profile_picture_string"
+  inline_response_200_7_message_user:
+    properties:
+      avatar:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+    example:
+      avatar: "avatar"
+      profile_picture_string: "profile_picture_string"
+  inline_response_200_7_message_mediaArray:
+    properties:
+      media_file_string:
+        type: "string"
+      media_file:
+        type: "string"
+        description: "The url of the link to the file"
+    example:
+      media_file_string: "media_file_string"
+      media_file: "media_file"
+  inline_response_200_7_message_files:
+    properties:
+      file_string:
+        type: "string"
+      url:
+        type: "string"
+    example:
+      file_string: "file_string"
+      url: "url"
+  inline_response_200_7_message:
+    properties:
+      id:
+        type: "number"
+      message:
+        type: "string"
+      call:
+        type: "string"
+      chatId:
+        type: "string"
+      userId:
+        type: "string"
+      type:
+        type: "string"
+        example: "media, string"
+      createdAt:
+        type: "string"
+        description: "The date time of when the message was created (sent) or the\
+          \ call  made"
+      name:
+        type: "string"
+        description: "The full name of the user who sent the message or called"
+      user:
+        $ref: "#/definitions/inline_response_200_7_message_user"
+      mediaArray:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_7_message_mediaArray"
+      files:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_7_message_files"
+    example:
+      call: "call"
+      createdAt: "createdAt"
+      chatId: "chatId"
+      name: "name"
+      files:
+      - file_string: "file_string"
+        url: "url"
+      - file_string: "file_string"
+        url: "url"
+      id: 5.63737665663332876420099637471139430999755859375
+      message: "message"
+      type: "media, string"
+      userId: "userId"
+      user:
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+      mediaArray:
+      - media_file_string: "media_file_string"
+        media_file: "media_file"
+      - media_file_string: "media_file_string"
+        media_file: "media_file"
+  inline_response_200_7_chats:
+    properties:
+      type:
+        type: "string"
+        example: "unreadAndFavorite, unread, favorite, readandNonfavorite, delivered,\
+          \          deliveredAndseen, answered, nonanswered"
+      chatType:
+        type: "string"
+        example: "group or private"
+      last_activity:
+        type: "string"
+      createdAt:
+        type: "string"
+      participantIds:
+        type: "array"
+        items:
+          type: "number"
+      user:
+        $ref: "#/definitions/inline_response_200_7_user"
+      groupChatInfo:
+        $ref: "#/definitions/inline_response_200_7_groupChatInfo"
+      message:
+        $ref: "#/definitions/inline_response_200_7_message"
+    example:
+      createdAt: "createdAt"
+      last_activity: "last_activity"
+      groupChatInfo:
+        chatId: 5.962133916683182377482808078639209270477294921875
+        name: "name"
+        adminId: 1.46581298050294517310021547018550336360931396484375
+        avatar: "avatar"
+        id: 6.02745618307040320615897144307382404804229736328125
+        profile_picture_string: "profile_picture_string"
+      participantIds:
+      - 0.80082819046101150206595775671303272247314453125
+      - 0.80082819046101150206595775671303272247314453125
+      type: "unreadAndFavorite, unread, favorite, readandNonfavorite, delivered, \
+        \         deliveredAndseen, answered, nonanswered"
+      message:
+        call: "call"
+        createdAt: "createdAt"
+        chatId: "chatId"
+        name: "name"
+        files:
+        - file_string: "file_string"
+          url: "url"
+        - file_string: "file_string"
+          url: "url"
+        id: 5.63737665663332876420099637471139430999755859375
+        message: "message"
+        type: "media, string"
+        userId: "userId"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+        mediaArray:
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+      user:
+        last_name: "last_name"
+        avatar: "avatar"
+        first_name: "first_name"
+        profile_picture_string: "profile_picture_string"
+      chatType: "group or private"
+  inline_response_200_7:
+    properties:
+      success:
+        type: "boolean"
+      chats:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_7_chats"
+    example:
+      success: true
+      chats:
+      - createdAt: "createdAt"
+        last_activity: "last_activity"
+        groupChatInfo:
+          chatId: 5.962133916683182377482808078639209270477294921875
+          name: "name"
+          adminId: 1.46581298050294517310021547018550336360931396484375
+          avatar: "avatar"
+          id: 6.02745618307040320615897144307382404804229736328125
+          profile_picture_string: "profile_picture_string"
+        participantIds:
+        - 0.80082819046101150206595775671303272247314453125
+        - 0.80082819046101150206595775671303272247314453125
+        type: "unreadAndFavorite, unread, favorite, readandNonfavorite, delivered,\
+          \          deliveredAndseen, answered, nonanswered"
+        message:
+          call: "call"
+          createdAt: "createdAt"
+          chatId: "chatId"
+          name: "name"
+          files:
+          - file_string: "file_string"
+            url: "url"
+          - file_string: "file_string"
+            url: "url"
+          id: 5.63737665663332876420099637471139430999755859375
+          message: "message"
+          type: "media, string"
+          userId: "userId"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+          mediaArray:
+          - media_file_string: "media_file_string"
+            media_file: "media_file"
+          - media_file_string: "media_file_string"
+            media_file: "media_file"
+        user:
+          last_name: "last_name"
+          avatar: "avatar"
+          first_name: "first_name"
+          profile_picture_string: "profile_picture_string"
+        chatType: "group or private"
+      - createdAt: "createdAt"
+        last_activity: "last_activity"
+        groupChatInfo:
+          chatId: 5.962133916683182377482808078639209270477294921875
+          name: "name"
+          adminId: 1.46581298050294517310021547018550336360931396484375
+          avatar: "avatar"
+          id: 6.02745618307040320615897144307382404804229736328125
+          profile_picture_string: "profile_picture_string"
+        participantIds:
+        - 0.80082819046101150206595775671303272247314453125
+        - 0.80082819046101150206595775671303272247314453125
+        type: "unreadAndFavorite, unread, favorite, readandNonfavorite, delivered,\
+          \          deliveredAndseen, answered, nonanswered"
+        message:
+          call: "call"
+          createdAt: "createdAt"
+          chatId: "chatId"
+          name: "name"
+          files:
+          - file_string: "file_string"
+            url: "url"
+          - file_string: "file_string"
+            url: "url"
+          id: 5.63737665663332876420099637471139430999755859375
+          message: "message"
+          type: "media, string"
+          userId: "userId"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+          mediaArray:
+          - media_file_string: "media_file_string"
+            media_file: "media_file"
+          - media_file_string: "media_file_string"
+            media_file: "media_file"
+        user:
+          last_name: "last_name"
+          avatar: "avatar"
+          first_name: "first_name"
+          profile_picture_string: "profile_picture_string"
+        chatType: "group or private"
+  body_1:
+    properties:
+      phone:
+        type: "string"
+        description: "Only include the country code and digits of the number in the\
+          \ phone string"
+  inline_response_200_8:
+    properties:
+      success:
+        type: "boolean"
+      userContactsWithWhatApp:
+        type: "array"
+        items:
+          type: "string"
+          example: "306979660998"
+      undeterminedPhoneNumbers:
+        type: "array"
+        items:
+          type: "string"
+          example: "3024270222"
+      eightUsers:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+    example:
+      success: true
+      undeterminedPhoneNumbers:
+      - "3024270222"
+      - "3024270222"
+      userContactsWithWhatApp:
+      - "306979660998"
+      - "306979660998"
+      eightUsers:
+      - country_code: "country_code"
+        socket_id: "socket_id"
+        passcode_expiration: "passcode_expiration"
+        phone: "phone"
+        verified: true
+        last_name: "last_name"
+        id: 0.80082819046101150206595775671303272247314453125
+        avatar: "avatar"
+        first_name: "first_name"
+        email: "email"
+        profile_picture_string: "profile_picture_string"
+        passcode: "passcode"
+      - country_code: "country_code"
+        socket_id: "socket_id"
+        passcode_expiration: "passcode_expiration"
+        phone: "phone"
+        verified: true
+        last_name: "last_name"
+        id: 0.80082819046101150206595775671303272247314453125
+        avatar: "avatar"
+        first_name: "first_name"
+        email: "email"
+        profile_picture_string: "profile_picture_string"
+        passcode: "passcode"
+  body_2:
+    properties:
+      phone:
+        type: "string"
+        example: "3105910213"
+  inline_response_200_9:
+    properties:
+      success:
+        type: "boolean"
+      successfullySentSMS:
+        type: "array"
+        items:
+          type: "string"
+          example: "306979660998"
+      unsuccessfullySentSMS:
+        type: "array"
+        items:
+          type: "string"
+          example: "3104445566"
+    example:
+      success: true
+      unsuccessfullySentSMS:
+      - "3104445566"
+      - "3104445566"
+      successfullySentSMS:
+      - "306979660998"
+      - "306979660998"
+  body_3:
+    type: "object"
+    properties:
+      country_code:
+        type: "string"
+      phone:
+        type: "string"
+      passcode:
+        type: "string"
+  inline_response_200_10:
+    properties:
+      token:
+        type: "string"
+        description: "Used for authenicating"
+    example:
+      token: "token"
+  body_4:
+    type: "object"
+    properties:
+      country_code:
+        type: "string"
+      phone:
+        type: "string"
+  inline_response_200_11:
+    properties:
+      passcode:
+        type: "string"
+      passcode_expiration:
+        type: "string"
+    example:
+      passcode_expiration: "passcode_expiration"
+      passcode: "passcode"
+  inline_response_200_12_mediaArray:
+    properties:
+      id:
+        type: "number"
+      media_file_string:
+        type: "string"
+        description: " "
+      media_file:
+        type: "string"
+      user_id:
+        type: "number"
+      groupChatId:
+        type: "number"
+    example:
+      media_file_string: "media_file_string"
+      groupChatId: 1.46581298050294517310021547018550336360931396484375
+      user_id: 6.02745618307040320615897144307382404804229736328125
+      id: 0.80082819046101150206595775671303272247314453125
+      media_file: "media_file"
+  inline_response_200_12:
+    properties:
+      mediaArray:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_12_mediaArray"
+    example:
+      mediaArray:
+      - media_file_string: "media_file_string"
+        groupChatId: 1.46581298050294517310021547018550336360931396484375
+        user_id: 6.02745618307040320615897144307382404804229736328125
+        id: 0.80082819046101150206595775671303272247314453125
+        media_file: "media_file"
+      - media_file_string: "media_file_string"
+        groupChatId: 1.46581298050294517310021547018550336360931396484375
+        user_id: 6.02745618307040320615897144307382404804229736328125
+        id: 0.80082819046101150206595775671303272247314453125
+        media_file: "media_file"
+  inline_response_200_13_sharedMedia:
+    properties:
+      id:
+        type: "number"
+      media_file_string:
+        type: "string"
+        description: "In the media table, there is a getter function which retrieves\
+          \ the AWS bucket file which this media object is assoicated with"
+      media_file:
+        type: "string"
+        description: "The URL which the file can be uploaded from"
+      user_id:
+        type: "number"
+      groupChatId:
+        type: "number"
+    example:
+      media_file_string: "media_file_string"
+      groupChatId: 1.46581298050294517310021547018550336360931396484375
+      user_id: 6.02745618307040320615897144307382404804229736328125
+      id: 0.80082819046101150206595775671303272247314453125
+      media_file: "media_file"
+  inline_response_200_13:
+    properties:
+      sharedMedia:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_13_sharedMedia"
+    example:
+      sharedMedia:
+      - media_file_string: "media_file_string"
+        groupChatId: 1.46581298050294517310021547018550336360931396484375
+        user_id: 6.02745618307040320615897144307382404804229736328125
+        id: 0.80082819046101150206595775671303272247314453125
+        media_file: "media_file"
+      - media_file_string: "media_file_string"
+        groupChatId: 1.46581298050294517310021547018550336360931396484375
+        user_id: 6.02745618307040320615897144307382404804229736328125
+        id: 0.80082819046101150206595775671303272247314453125
+        media_file: "media_file"
+  body_5:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+      trueOrFalse:
+        type: "boolean"
+        description: "Set to true, if you would like to make the chat a favorite.\
+          \ Set to false if you would like to unfavorite a chat"
+  inline_response_200_14_messages_files:
+    properties:
+      s3_url:
+        type: "string"
+      file_string:
+        type: "string"
+    example:
+      s3_url: "s3_url"
+      file_string: "file_string"
+  inline_response_200_14_messages_unread:
+    properties:
+      id:
+        type: "number"
+      message:
+        type: "string"
+      userId:
+        type: "number"
+      chatId:
+        type: "number"
+      mediaArray:
+        type: "array"
+        items:
+          type: "string"
+      files:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_14_messages_files"
+      type:
+        type: "string"
+      createdAt:
+        type: "string"
+      user:
+        $ref: "#/definitions/inline_response_200_7_message_user"
+    example:
+      createdAt: "createdAt"
+      chatId: 1.46581298050294517310021547018550336360931396484375
+      files:
+      - s3_url: "s3_url"
+        file_string: "file_string"
+      - s3_url: "s3_url"
+        file_string: "file_string"
+      id: 0.80082819046101150206595775671303272247314453125
+      message: "message"
+      type: "type"
+      userId: 6.02745618307040320615897144307382404804229736328125
+      mediaArray:
+      - "mediaArray"
+      - "mediaArray"
+      user:
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+  inline_response_200_14_messages_read:
+    properties:
+      id:
+        type: "number"
+      message:
+        type: "string"
+      userId:
+        type: "number"
+      chatId:
+        type: "number"
+      mediaArray:
+        type: "array"
+        items:
+          type: "string"
+      type:
+        type: "string"
+      createdAt:
+        type: "string"
+      user:
+        $ref: "#/definitions/inline_response_200_7_message_user"
+    example:
+      createdAt: "createdAt"
+      chatId: 2.3021358869347654518833223846741020679473876953125
+      id: 5.962133916683182377482808078639209270477294921875
+      message: "message"
+      type: "type"
+      userId: 5.63737665663332876420099637471139430999755859375
+      mediaArray:
+      - "mediaArray"
+      - "mediaArray"
+      user:
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+  inline_response_200_14_messages:
+    properties:
+      unread:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_14_messages_unread"
+      read:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_14_messages_read"
+      allMessages:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_14_messages_read"
+      last_time_user_entered:
+        type: "string"
+        description: "This will be the date time of the last time a user entered a\
+          \ chat."
+    example:
+      read:
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      last_time_user_entered: "last_time_user_entered"
+      unread:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        files:
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        files:
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      allMessages:
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+  inline_response_200_14:
+    properties:
+      messages:
+        $ref: "#/definitions/inline_response_200_14_messages"
+    example:
+      messages:
+        read:
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        last_time_user_entered: "last_time_user_entered"
+        unread:
+        - createdAt: "createdAt"
+          chatId: 1.46581298050294517310021547018550336360931396484375
+          files:
+          - s3_url: "s3_url"
+            file_string: "file_string"
+          - s3_url: "s3_url"
+            file_string: "file_string"
+          id: 0.80082819046101150206595775671303272247314453125
+          message: "message"
+          type: "type"
+          userId: 6.02745618307040320615897144307382404804229736328125
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        - createdAt: "createdAt"
+          chatId: 1.46581298050294517310021547018550336360931396484375
+          files:
+          - s3_url: "s3_url"
+            file_string: "file_string"
+          - s3_url: "s3_url"
+            file_string: "file_string"
+          id: 0.80082819046101150206595775671303272247314453125
+          message: "message"
+          type: "type"
+          userId: 6.02745618307040320615897144307382404804229736328125
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        allMessages:
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+  inline_response_200_15_chat:
+    properties:
+      id:
+        type: "number"
+      groupChat:
+        type: "boolean"
+        description: "Set to true if the chat is a group chat"
+      privateChat:
+        type: "boolean"
+        description: "Set tot true if the chat is a private chat"
+      participantsId:
+        type: "array"
+        example:
+        - "22"
+        - "33"
+        description: "An array of the user Ids participating in the chat"
+        items:
+          type: "integer"
+    example:
+      groupChat: true
+      privateChat: true
+      id: 0.80082819046101150206595775671303272247314453125
+      participantsId:
+      - "22"
+      - "33"
+  inline_response_200_15:
+    properties:
+      chat:
+        $ref: "#/definitions/inline_response_200_15_chat"
+    example:
+      chat:
+        groupChat: true
+        privateChat: true
+        id: 0.80082819046101150206595775671303272247314453125
+        participantsId:
+        - "22"
+        - "33"
+  body_6:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      mediaId:
+        type: "string"
+  inline_response_200_16:
+    properties:
+      success:
+        type: "boolean"
+      groupChat:
+        $ref: "#/definitions/GroupChat"
+    example:
+      groupChat:
+        createdAt: "createdAt"
+        chatId: 6
+        name: "name"
+        adminId: "adminId"
+        id: 0
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+      success: true
+  inline_response_200_17_messages_files:
+    properties:
+      url:
+        type: "string"
+      file_string:
+        type: "string"
+    example:
+      file_string: "file_string"
+      url: "url"
+  inline_response_200_17_messages_unread:
+    properties:
+      id:
+        type: "number"
+      message:
+        type: "string"
+      userId:
+        type: "number"
+      chatId:
+        type: "number"
+      mediaArray:
+        type: "array"
+        items:
+          type: "string"
+      files:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_17_messages_files"
+      type:
+        type: "string"
+      createdAt:
+        type: "string"
+      user:
+        $ref: "#/definitions/inline_response_200_7_message_user"
+    example:
+      createdAt: "createdAt"
+      chatId: 1.46581298050294517310021547018550336360931396484375
+      files:
+      - file_string: "file_string"
+        url: "url"
+      - file_string: "file_string"
+        url: "url"
+      id: 0.80082819046101150206595775671303272247314453125
+      message: "message"
+      type: "type"
+      userId: 6.02745618307040320615897144307382404804229736328125
+      mediaArray:
+      - "mediaArray"
+      - "mediaArray"
+      user:
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+  inline_response_200_17_messages:
+    properties:
+      unread:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_17_messages_unread"
+      read:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_14_messages_read"
+      allMessages:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_14_messages_read"
+      last_time_user_entered:
+        type: "string"
+        description: "This will be the date time of the last time a user entered a\
+          \ chat."
+    example:
+      read:
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      last_time_user_entered: "last_time_user_entered"
+      unread:
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        files:
+        - file_string: "file_string"
+          url: "url"
+        - file_string: "file_string"
+          url: "url"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      - createdAt: "createdAt"
+        chatId: 1.46581298050294517310021547018550336360931396484375
+        files:
+        - file_string: "file_string"
+          url: "url"
+        - file_string: "file_string"
+          url: "url"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "type"
+        userId: 6.02745618307040320615897144307382404804229736328125
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      allMessages:
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+      - createdAt: "createdAt"
+        chatId: 2.3021358869347654518833223846741020679473876953125
+        id: 5.962133916683182377482808078639209270477294921875
+        message: "message"
+        type: "type"
+        userId: 5.63737665663332876420099637471139430999755859375
+        mediaArray:
+        - "mediaArray"
+        - "mediaArray"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+  inline_response_200_17:
+    properties:
+      messages:
+        $ref: "#/definitions/inline_response_200_17_messages"
+    example:
+      messages:
+        read:
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        last_time_user_entered: "last_time_user_entered"
+        unread:
+        - createdAt: "createdAt"
+          chatId: 1.46581298050294517310021547018550336360931396484375
+          files:
+          - file_string: "file_string"
+            url: "url"
+          - file_string: "file_string"
+            url: "url"
+          id: 0.80082819046101150206595775671303272247314453125
+          message: "message"
+          type: "type"
+          userId: 6.02745618307040320615897144307382404804229736328125
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        - createdAt: "createdAt"
+          chatId: 1.46581298050294517310021547018550336360931396484375
+          files:
+          - file_string: "file_string"
+            url: "url"
+          - file_string: "file_string"
+            url: "url"
+          id: 0.80082819046101150206595775671303272247314453125
+          message: "message"
+          type: "type"
+          userId: 6.02745618307040320615897144307382404804229736328125
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        allMessages:
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+        - createdAt: "createdAt"
+          chatId: 2.3021358869347654518833223846741020679473876953125
+          id: 5.962133916683182377482808078639209270477294921875
+          message: "message"
+          type: "type"
+          userId: 5.63737665663332876420099637471139430999755859375
+          mediaArray:
+          - "mediaArray"
+          - "mediaArray"
+          user:
+            avatar: "avatar"
+            profile_picture_string: "profile_picture_string"
+  body_7:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+      trueOrFalse:
+        type: "boolean"
+        description: "Set to true, if you would like to make the chat a favorite.\
+          \ Set to false if you would like to unfavorite a chat"
+  body_8:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+      message:
+        type: "string"
+      chatId:
+        type: "string"
+  body_9:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+  inline_response_200_18:
+    properties:
+      success:
+        type: "boolean"
+      responseMsg:
+        type: "string"
+      message:
+        $ref: "#/definitions/Message"
+    example:
+      success: true
+      message:
+        createdAt: "createdAt"
+        GroupChat:
+          socket_id: "socket_id"
+          verified: true
+          last_name: "last_name"
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+          country_code: "country_code"
+          passcode_expiration: "passcode_expiration"
+          phone: "phone"
+          id: 6.02745618307040320615897144307382404804229736328125
+          position: "{}"
+          first_name: "first_name"
+          email: "email"
+          passcode: "passcode"
+        chatId: "chatId"
+        post: true
+        name: "name"
+        files:
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "media, string"
+        userId: "userId"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+        mediaArray:
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+      responseMsg: "responseMsg"
+  inline_response_200_19:
+    properties:
+      success:
+        type: "boolean"
+      files:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_17_messages_files"
+    example:
+      success: true
+      files:
+      - file_string: "file_string"
+        url: "url"
+      - file_string: "file_string"
+        url: "url"
+  inline_response_200_20_mediaArray:
+    properties:
+      media_file:
+        type: "string"
+      media_file_string:
+        type: "string"
+    example:
+      media_file_string: "media_file_string"
+      media_file: "media_file"
+  inline_response_200_20:
+    properties:
+      success:
+        type: "boolean"
+      mediaArray:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_200_20_mediaArray"
+    example:
+      success: true
+      mediaArray:
+      - media_file_string: "media_file_string"
+        media_file: "media_file"
+      - media_file_string: "media_file_string"
+        media_file: "media_file"
+  inline_response_200_21:
+    properties:
+      success:
+        type: "boolean"
+      userChat:
+        $ref: "#/definitions/UserChats"
+    example:
+      userChat:
+        last_time_in_chat: "last_time_in_chat"
+        chatId: "chatId"
+        entered_chat_quantity: 0.80082819046101150206595775671303272247314453125
+        current_chat: true
+        messages_not_to_display:
+        - 50
+        - 100
+        - 150
+        unread_messages: true
+        user_added_notifications: true
+        userId: "userId"
+        favorite: true
+        message_notifications: true
+      success: true
+  body_10:
+    type: "object"
+    properties:
+      request_send:
+        type: "string"
+      request_receiver:
+        type: "string"
+      status:
+        type: "string"
+      reportBlockedUser:
+        type: "string"
+  body_11:
+    type: "object"
+    properties:
+      userId:
+        type: "number"
+      call:
+        type: "string"
+      chatId:
+        type: "number"
+      createdAt:
+        type: "string"
+        description: "The createdAt attribute is the date time a call was created\
+          \ (send)."
+  body_12:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+      call:
+        type: "string"
+      chatId:
+        type: "string"
+      finishedAt:
+        type: "string"
+        description: "The finishedAt attribute is the date time a call was finished\
+          \ (end)."
+  inline_response_200_22:
+    properties:
+      messages:
+        type: "array"
+        items:
+          $ref: "#/definitions/Message"
+      chat:
+        type: "array"
+        items:
+          $ref: "#/definitions/Chat"
+      groupChats:
+        type: "array"
+        items:
+          $ref: "#/definitions/GroupChat"
+      users:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+      calls:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+    example:
+      calls:
+      - country_code: "country_code"
+        socket_id: "socket_id"
+        passcode_expiration: "passcode_expiration"
+        phone: "phone"
+        verified: true
+        last_name: "last_name"
+        id: 0.80082819046101150206595775671303272247314453125
+        avatar: "avatar"
+        first_name: "first_name"
+        email: "email"
+        profile_picture_string: "profile_picture_string"
+        passcode: "passcode"
+      - country_code: "country_code"
+        socket_id: "socket_id"
+        passcode_expiration: "passcode_expiration"
+        phone: "phone"
+        verified: true
+        last_name: "last_name"
+        id: 0.80082819046101150206595775671303272247314453125
+        avatar: "avatar"
+        first_name: "first_name"
+        email: "email"
+        profile_picture_string: "profile_picture_string"
+        passcode: "passcode"
+      chat:
+      - last_activity: "last_activity"
+        groupChat: true
+        privateChat: true
+        id: 0.80082819046101150206595775671303272247314453125
+        participantsId:
+        - "22"
+        - "33"
+        last_activity_in_associated_channel_event_or_groupChat: "last_activity_in_associated_channel_event_or_groupChat"
+      - last_activity: "last_activity"
+        groupChat: true
+        privateChat: true
+        id: 0.80082819046101150206595775671303272247314453125
+        participantsId:
+        - "22"
+        - "33"
+        last_activity_in_associated_channel_event_or_groupChat: "last_activity_in_associated_channel_event_or_groupChat"
+      messages:
+      - createdAt: "createdAt"
+        GroupChat:
+          socket_id: "socket_id"
+          verified: true
+          last_name: "last_name"
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+          country_code: "country_code"
+          passcode_expiration: "passcode_expiration"
+          phone: "phone"
+          id: 6.02745618307040320615897144307382404804229736328125
+          position: "{}"
+          first_name: "first_name"
+          email: "email"
+          passcode: "passcode"
+        chatId: "chatId"
+        post: true
+        name: "name"
+        files:
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "media, string"
+        userId: "userId"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+        mediaArray:
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+      - createdAt: "createdAt"
+        GroupChat:
+          socket_id: "socket_id"
+          verified: true
+          last_name: "last_name"
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+          country_code: "country_code"
+          passcode_expiration: "passcode_expiration"
+          phone: "phone"
+          id: 6.02745618307040320615897144307382404804229736328125
+          position: "{}"
+          first_name: "first_name"
+          email: "email"
+          passcode: "passcode"
+        chatId: "chatId"
+        post: true
+        name: "name"
+        files:
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        - s3_url: "s3_url"
+          file_string: "file_string"
+        id: 0.80082819046101150206595775671303272247314453125
+        message: "message"
+        type: "media, string"
+        userId: "userId"
+        user:
+          avatar: "avatar"
+          profile_picture_string: "profile_picture_string"
+        mediaArray:
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+        - media_file_string: "media_file_string"
+          media_file: "media_file"
+      groupChats:
+      - createdAt: "createdAt"
+        chatId: 6
+        name: "name"
+        adminId: "adminId"
+        id: 0
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+      - createdAt: "createdAt"
+        chatId: 6
+        name: "name"
+        adminId: "adminId"
+        id: 0
+        avatar: "avatar"
+        profile_picture_string: "profile_picture_string"
+      users:
+      - country_code: "country_code"
+        socket_id: "socket_id"
+        passcode_expiration: "passcode_expiration"
+        phone: "phone"
+        verified: true
+        last_name: "last_name"
+        id: 0.80082819046101150206595775671303272247314453125
+        avatar: "avatar"
+        first_name: "first_name"
+        email: "email"
+        profile_picture_string: "profile_picture_string"
+        passcode: "passcode"
+      - country_code: "country_code"
+        socket_id: "socket_id"
+        passcode_expiration: "passcode_expiration"
+        phone: "phone"
+        verified: true
+        last_name: "last_name"
+        id: 0.80082819046101150206595775671303272247314453125
+        avatar: "avatar"
+        first_name: "first_name"
+        email: "email"
+        profile_picture_string: "profile_picture_string"
+        passcode: "passcode"
+  inline_response_500_messages:
+    properties:
+      message:
+        type: "string"
+      stack:
+        type: "string"
+  inline_response_500:
+    properties:
+      messages:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_500_messages"
+      chat:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_500_messages"
+      groupChats:
+        type: "array"
+        items:
+          $ref: "#/definitions/inline_response_500_messages"
+  Message_GroupChat:
+    properties:
+      id:
+        type: "number"
+        description: "Unique identifer"
+      first_name:
+        type: "string"
+      last_name:
+        type: "string"
+      phone:
+        type: "string"
+      country_code:
+        type: "string"
+      email:
+        type: "string"
+      profile_picture_string:
+        type: "string"
+      avatar:
+        type: "string"
+      position:
+        type: "object"
+        properties: {}
+      verified:
+        type: "boolean"
+      passcode:
+        type: "string"
+      passcode_expiration:
+        type: "string"
+      socket_id:
+        type: "string"
+    example:
+      socket_id: "socket_id"
+      verified: true
+      last_name: "last_name"
+      avatar: "avatar"
+      profile_picture_string: "profile_picture_string"
+      country_code: "country_code"
+      passcode_expiration: "passcode_expiration"
+      phone: "phone"
+      id: 6.02745618307040320615897144307382404804229736328125
+      position: "{}"
+      first_name: "first_name"
+      email: "email"
+      passcode: "passcode"
+  Message_files:
+    properties:
+      file_string:
+        type: "string"
+      s3_url:
+        type: "string"
+    example:
+      s3_url: "s3_url"
+      file_string: "file_string"
