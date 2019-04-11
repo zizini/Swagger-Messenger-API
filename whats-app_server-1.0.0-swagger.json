@@ -1,0 +1,2932 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Whats App API",
+    "version" : "1.0.0",
+    "title" : "Whats App API",
+    "contact" : {
+      "name" : "Irene-Maria Tabakis",
+      "email" : "irma.tabakis@gmail.com"
+    }
+  },
+  "tags" : [ {
+    "name" : "user"
+  }, {
+    "name" : "auth"
+  }, {
+    "name" : "media"
+  }, {
+    "name" : "privatechat"
+  }, {
+    "name" : "groupchat"
+  }, {
+    "name" : "message"
+  }, {
+    "name" : "call"
+  }, {
+    "name" : "chat"
+  }, {
+    "name" : "relationship"
+  }, {
+    "name" : "socket"
+  } ],
+  "securityDefinitions" : {
+    "Authorization" : {
+      "type" : "apiKey",
+      "in" : "header",
+      "name" : "Authorization"
+    },
+    "Socket" : {
+      "type" : "apiKey",
+      "in" : "header",
+      "name" : "socket"
+    }
+  },
+  "paths" : {
+    "/users" : {
+      "post" : {
+        "tags" : [ "user" ],
+        "summary" : "Create a user object using a phone number.",
+        "description" : " ",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Create a user object. Must have the parameter of phone umber in order to send the verifcation code.",
+          "schema" : {
+            "$ref" : "#/definitions/User"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A user's phone number is added to the user object. The other fields will be null. The other fields will receive a value after the user verifies the phone number. The variable name of the response is user.",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          },
+          "500" : {
+            "description" : "The phone number was not provided."
+          }
+        }
+      }
+    },
+    "/users/{userId}" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Update a user",
+        "description" : "Add the mediaId in the body for the user's avatar to be updated",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "required" : true,
+          "type" : "string",
+          "minimum" : 1,
+          "description" : "The id of the user is used to target the specific user the developer wishes to edit. The variable name of the response is users."
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Edit the user with values found in the request body.",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "mediaId" : {
+                "type" : "string"
+              },
+              "id" : {
+                "type" : "number",
+                "description" : "Unique identifer"
+              },
+              "first_name" : {
+                "type" : "string"
+              },
+              "last_name" : {
+                "type" : "string"
+              },
+              "phone" : {
+                "type" : "string"
+              },
+              "country_code" : {
+                "type" : "string"
+              },
+              "email" : {
+                "type" : "string"
+              },
+              "profile_picture_string" : {
+                "type" : "string"
+              },
+              "avatar" : {
+                "type" : "string"
+              },
+              "verified" : {
+                "type" : "boolean"
+              },
+              "passcode" : {
+                "type" : "string"
+              },
+              "passcode_expiration" : {
+                "type" : "string"
+              },
+              "socket_id" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A user object will be returned.",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Delete a user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "required" : true,
+          "type" : "string",
+          "description" : "Delete a user. Place the ID of the user you wish to delete in the path.",
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A user deleted.",
+            "schema" : {
+              "type" : "string",
+              "example" : "User 'ID number' was deleted"
+            }
+          }
+        }
+      },
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get info on one specific user.",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "currentUserId",
+          "required" : false,
+          "type" : "string",
+          "description" : "When querying for a specific user to display user info."
+        }, {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "description" : "The userId of a specific user.",
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns one user. The variable name of the response is user.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "number_of_favorited_messages" : {
+                  "type" : "number",
+                  "description" : "If currentUserId is null, the number of favorited messages will be the total number of favorited messages of the queried user. If currentUserId is not null, this value will be the number of favorited messages the currentUserId favorited of the user being queried."
+                },
+                "user" : {
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "number",
+                      "description" : "Unique identifer."
+                    },
+                    "first_name" : {
+                      "type" : "string"
+                    },
+                    "last_name" : {
+                      "type" : "string"
+                    },
+                    "phone" : {
+                      "type" : "string"
+                    },
+                    "country_code" : {
+                      "type" : "string"
+                    },
+                    "email" : {
+                      "type" : "string"
+                    },
+                    "profile_picture_string" : {
+                      "type" : "string"
+                    },
+                    "avatar" : {
+                      "type" : "string"
+                    },
+                    "verified" : {
+                      "type" : "boolean"
+                    },
+                    "passcode" : {
+                      "type" : "string"
+                    },
+                    "passcode_expiration" : {
+                      "type" : "string"
+                    },
+                    "socket_id" : {
+                      "type" : "string"
+                    },
+                    "relationship_status" : {
+                      "type" : "string",
+                      "example" : "no_relationship, blocked, friends"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/friends" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all the friend's belonging to this user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "required" : true,
+          "type" : "string",
+          "description" : "Get all the friend's belonging to this user.",
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns all user's who are friend with the specified userId given. The variable name of the response is users.",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/blocked" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all the blocked users belonging to a specifc user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "description" : "The id of the user is needed to query the blocked user's of this specifc individual.",
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns a list of all the blocked user's relating to this user. The variable name of the response is users.",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/messages" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all messages belonging to a specific user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "All the messages this user has sent will be returned. The variable name of the response is messages.",
+            "schema" : {
+              "$ref" : "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/messages/unread" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all unread messages belonging to a user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Each key in the JSON object returned is the chat number assoicated with the unread messages located in the array. The variable name of the response is messages.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "unreadMessages" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "userId" : {
+                        "type" : "number"
+                      },
+                      "chatId" : {
+                        "type" : "number"
+                      },
+                      "mediaArray" : {
+                        "type" : "array",
+                        "items" : {
+                          "type" : "string"
+                        }
+                      },
+                      "type" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "type" : "string"
+                      },
+                      "userAvatar" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/messages/delivered" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all delivered messages.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Each key in the JSON object returned is the chat number assoicated with the delivered messages located in the array. The variable name of the response is messages.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "deliveredMessages" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "userId" : {
+                        "type" : "number"
+                      },
+                      "chatId" : {
+                        "type" : "number"
+                      },
+                      "mediaArray" : {
+                        "type" : "array",
+                        "items" : {
+                          "type" : "string"
+                        }
+                      },
+                      "type" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "type" : "string"
+                      },
+                      "userAvatar" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/messages/seen" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all messages belonging to a user that have been seen by another user/ other users.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Each key in the JSON object returned is the chat number assoicated with the messages that have been seen located in the array. The variable name of the response is messages.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "seenMessages" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "userId" : {
+                        "type" : "number"
+                      },
+                      "chatId" : {
+                        "type" : "number"
+                      },
+                      "mediaArray" : {
+                        "type" : "array",
+                        "items" : {
+                          "type" : "string"
+                        }
+                      },
+                      "type" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "type" : "string"
+                      },
+                      "userAvatar" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/messages/favorite" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all favorite messages belonging to a user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "All favorited messages returned. The variable name of the response is favoriteMessages.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "favoriteMessages" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "userId" : {
+                        "type" : "number"
+                      },
+                      "chatId" : {
+                        "type" : "number"
+                      },
+                      "mediaArray" : {
+                        "type" : "array",
+                        "items" : {
+                          "type" : "string"
+                        }
+                      },
+                      "type" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "type" : "string"
+                      },
+                      "userAvatar" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/calls" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all calls made by a specific user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "All the calls this user has made will be returned. The variable name of the response is calls"
+          }
+        }
+      }
+    },
+    "/users/{userId}/calls/nonanswered" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all non answered calls belonging to a user.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Each key in the JSON object returned is the chat number assoicated with the non answered calls located in the array. The variable name of the response is calls.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "nonAnsweredCalls" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "userId" : {
+                        "type" : "number"
+                      },
+                      "chatId" : {
+                        "type" : "number"
+                      },
+                      "createdAt" : {
+                        "type" : "string"
+                      },
+                      "userAvatar" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/calls/answered" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get all answered calls.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Each key in the JSON object returned is the chat number assoicated with the call located in the array. The variable name of the response is calls.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "answeredCalls" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "userId" : {
+                        "type" : "number"
+                      },
+                      "chatId" : {
+                        "type" : "number"
+                      },
+                      "createdAt" : {
+                        "type" : "string"
+                      },
+                      "userAvatar" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/private&group_chats" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Get both private and group chats and calls the user is a participant of",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "All the private and group chats will be returned with the chat type equivlant to \"private\" or \"group\". There will also be a type to every object, the type can be equivlant to \"unreadAndFavorite,\" \"unread\", \"favorite\",\"readandNonfavorite\", \"delivered\", \"deliveredAndseen\", \"answered\" or \"nonanswered\".",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "chats" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "type" : {
+                        "type" : "string",
+                        "example" : "unreadAndFavorite, unread, favorite, readandNonfavorite, delivered,          deliveredAndseen, answered, nonanswered"
+                      },
+                      "chatType" : {
+                        "type" : "string",
+                        "example" : "group or private"
+                      },
+                      "last_activity" : {
+                        "type" : "string"
+                      },
+                      "createdAt" : {
+                        "type" : "string"
+                      },
+                      "participantIds" : {
+                        "type" : "array",
+                        "items" : {
+                          "type" : "number"
+                        }
+                      },
+                      "user" : {
+                        "type" : "object",
+                        "properties" : {
+                          "avatar" : {
+                            "type" : "string"
+                          },
+                          "profile_picture_string" : {
+                            "type" : "string"
+                          },
+                          "first_name" : {
+                            "type" : "string"
+                          },
+                          "last_name" : {
+                            "type" : "string"
+                          }
+                        }
+                      },
+                      "groupChatInfo" : {
+                        "type" : "object",
+                        "properties" : {
+                          "avatar" : {
+                            "type" : "string"
+                          },
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "name" : {
+                            "type" : "string"
+                          },
+                          "profile_picture_string" : {
+                            "type" : "string"
+                          },
+                          "adminId" : {
+                            "type" : "number"
+                          },
+                          "chatId" : {
+                            "type" : "number"
+                          }
+                        }
+                      },
+                      "message" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "message" : {
+                            "type" : "string"
+                          },
+                          "call" : {
+                            "type" : "string"
+                          },
+                          "chatId" : {
+                            "type" : "string"
+                          },
+                          "userId" : {
+                            "type" : "string"
+                          },
+                          "type" : {
+                            "type" : "string",
+                            "example" : "media, string"
+                          },
+                          "createdAt" : {
+                            "type" : "string",
+                            "description" : "The date time of when the message was created (sent) or the call  made"
+                          },
+                          "name" : {
+                            "type" : "string",
+                            "description" : "The full name of the user who sent the message or called"
+                          },
+                          "user" : {
+                            "type" : "object",
+                            "properties" : {
+                              "avatar" : {
+                                "type" : "string"
+                              },
+                              "profile_picture_string" : {
+                                "type" : "string"
+                              }
+                            }
+                          },
+                          "mediaArray" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "object",
+                              "properties" : {
+                                "media_file_string" : {
+                                  "type" : "string"
+                                },
+                                "media_file" : {
+                                  "type" : "string",
+                                  "description" : "The url of the link to the file"
+                                }
+                              }
+                            }
+                          },
+                          "files" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "object",
+                              "properties" : {
+                                "file_string" : {
+                                  "type" : "string"
+                                },
+                                "url" : {
+                                  "type" : "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/leave/{chatId}" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "This route is envoked when a user leaves a chat chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        }, {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the userChats object. The response variable name will be userChats",
+            "schema" : {
+              "$ref" : "#/definitions/UserChats"
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/check_contacts_use_whatsApp" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Check if contacts are WhatApp's users",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        }, {
+          "in" : "query",
+          "name" : "returnUserInfo",
+          "type" : "string",
+          "required" : false,
+          "description" : "if returnUserInfo is set to true, all the info about the user will be sent back."
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "phone" : {
+                  "type" : "string",
+                  "description" : "Only include the country code and digits of the number in the phone string"
+                }
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the users which use WhatApp and the invalid numbers the client sent in. If returnUserInfo is set to true, then the entire user object will be sent in",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "userContactsWithWhatApp" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string",
+                    "example" : "306979660998"
+                  }
+                },
+                "undeterminedPhoneNumbers" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string",
+                    "example" : "3024270222"
+                  }
+                },
+                "eightUsers" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/definitions/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/invite_to_WhatsApp" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Invite a contact to download WhatsApp via SMS",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "phone" : {
+                  "type" : "string",
+                  "example" : "3105910213"
+                }
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Sends a message to the numbers provided.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "successfullySentSMS" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string",
+                    "example" : "306979660998"
+                  }
+                },
+                "unsuccessfullySentSMS" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string",
+                    "example" : "3104445566"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/notifications/global" : {
+      "patch" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "user" ],
+        "summary" : "Edit the global settings for notifications",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "required" : true,
+          "type" : "string",
+          "minimum" : 1
+        }, {
+          "in" : "query",
+          "name" : "unread",
+          "required" : false,
+          "type" : "string",
+          "description" : "This query parameter can either be set to true or false"
+        }, {
+          "in" : "query",
+          "name" : "delivered",
+          "required" : false,
+          "type" : "string",
+          "description" : "This query parameter can either be set to true or false"
+        }, {
+          "in" : "query",
+          "name" : "seen",
+          "required" : false,
+          "type" : "string",
+          "description" : "This query parameter can either be set to true or false"
+        }, {
+          "in" : "query",
+          "name" : "nonanswered",
+          "required" : false,
+          "type" : "string",
+          "description" : "This query parameter can either be set to true or false"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "On sucess, the updated user will be returned. The name of the return object is user",
+            "schema" : {
+              "$ref" : "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/auth/verify" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "summary" : "The user will input verifaction code and if it is the correct code, a JSON web token will be returned",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Verify the passcode the user was sent.",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "country_code" : {
+                "type" : "string"
+              },
+              "phone" : {
+                "type" : "string"
+              },
+              "passcode" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The JSON web token is returned. This will be used for authenticating API routes",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "token" : {
+                  "type" : "string",
+                  "description" : "Used for authenicating"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/resend" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "summary" : "Resend another verifcation code to the user",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Send another verication code",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "country_code" : {
+                "type" : "string"
+              },
+              "phone" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the hashed passcode and the expiration date of the passcode. The variable name of the response is user",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "passcode" : {
+                  "type" : "string"
+                },
+                "passcode_expiration" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/media" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "media" ],
+        "summary" : "Upload a file",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "formData",
+          "name" : "file",
+          "description" : "The file which is being uploaded",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Sucessfully uploaded the file. The variable name of the response is media.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "mediaArray" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "media_file_string" : {
+                        "type" : "string",
+                        "description" : " "
+                      },
+                      "media_file" : {
+                        "type" : "string"
+                      },
+                      "user_id" : {
+                        "type" : "number"
+                      },
+                      "groupChatId" : {
+                        "type" : "number"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/media/shared/{userId1}/{userId2}" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "media" ],
+        "summary" : "Get all media which two user's have shared between each other",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId1",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        }, {
+          "in" : "path",
+          "name" : "userId2",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns an array of all media two users have shared between themeselves",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "sharedMedia" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "id" : {
+                        "type" : "number"
+                      },
+                      "media_file_string" : {
+                        "type" : "string",
+                        "description" : "In the media table, there is a getter function which retrieves the AWS bucket file which this media object is assoicated with"
+                      },
+                      "media_file" : {
+                        "type" : "string",
+                        "description" : "The URL which the file can be uploaded from"
+                      },
+                      "user_id" : {
+                        "type" : "number"
+                      },
+                      "groupChatId" : {
+                        "type" : "number"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/media/{mediaId}" : {
+      "delete" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "media" ],
+        "summary" : "Delete a media object.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "mediaId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1,
+          "description" : "The ID of the specific media object the developer wishes to delete"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The media objected was successfully deleted",
+            "schema" : {
+              "$ref" : "#/definitions/Media"
+            }
+          }
+        }
+      }
+    },
+    "/privateChats" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        }, {
+          "Socket" : [ ]
+        } ],
+        "tags" : [ "privatechat" ],
+        "summary" : "Create a private chat between two users",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "formData",
+          "name" : "userIds",
+          "description" : "Only two userIds can be sent for this endpoint due to the fact that you are creating a private chat",
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Created a private chat. The userIds are now being sent to the socket functions to check if the user's are online. The variable name of the response is chat",
+            "schema" : {
+              "$ref" : "#/definitions/Chat"
+            }
+          },
+          "400" : {
+            "description" : "Two userIds must be sent to the server for this endpoint to be reach",
+            "schema" : {
+              "type" : "string",
+              "example" : "Two userIds must be sent to the server"
+            }
+          }
+        }
+      }
+    },
+    "/privateChats/{chatId}" : {
+      "delete" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "privatechat" ],
+        "summary" : "Delete a private chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true,
+          "description" : "The ID of a specific chat",
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The chat was deleted",
+            "schema" : {
+              "$ref" : "#/definitions/Chat"
+            }
+          }
+        }
+      }
+    },
+    "/privateChats/{chatId}/favorite" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "privatechat" ],
+        "summary" : "Favorite a specific private chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "required" : true,
+          "type" : "string",
+          "minimum" : 1
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "userId" : {
+                "type" : "string"
+              },
+              "trueOrFalse" : {
+                "type" : "boolean",
+                "description" : "Set to true, if you would like to make the chat a favorite. Set to false if you would like to unfavorite a chat"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the specific chat chat which is now one of the user's favorite chats. The variable name of the response is chat",
+            "schema" : {
+              "$ref" : "#/definitions/Chat"
+            }
+          }
+        }
+      }
+    },
+    "/privateChats/{chatId}/user/{userId}/messages" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "privatechat" ],
+        "summary" : "Get 40 messages belonging to a private chat.",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        }, {
+          "in" : "path",
+          "name" : "chatId",
+          "required" : true,
+          "type" : "string",
+          "minimum" : 1
+        }, {
+          "in" : "query",
+          "name" : "messageId",
+          "required" : false,
+          "type" : "string",
+          "description" : "Include this query parameter when you would like to get the next 40 messages following a specific message. If this query parameter is not included, you will get the 40 newest messages in order"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns all the messages associated with a specific private chat. The messages will be divided into two sections -- unread & read. In each section, the messages will be ordered from newest to oldest. The variable name of the response is messages. allMessages will be ordered from oldest to newest (for you Sung!). The client can figure out which messages are unread by comparing the createdAt attribute with the last_time_user_entered variable. This route will trigger the \"read-receipts\" socket function for the specific user querying for message history",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "messages" : {
+                  "type" : "object",
+                  "properties" : {
+                    "unread" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "message" : {
+                            "type" : "string"
+                          },
+                          "userId" : {
+                            "type" : "number"
+                          },
+                          "chatId" : {
+                            "type" : "number"
+                          },
+                          "mediaArray" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          },
+                          "files" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "object",
+                              "properties" : {
+                                "s3_url" : {
+                                  "type" : "string"
+                                },
+                                "file_string" : {
+                                  "type" : "string"
+                                }
+                              }
+                            }
+                          },
+                          "type" : {
+                            "type" : "string"
+                          },
+                          "createdAt" : {
+                            "type" : "string"
+                          },
+                          "user" : {
+                            "type" : "object",
+                            "properties" : {
+                              "avatar" : {
+                                "type" : "string"
+                              },
+                              "profile_picture_string" : {
+                                "type" : "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "read" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "message" : {
+                            "type" : "string"
+                          },
+                          "userId" : {
+                            "type" : "number"
+                          },
+                          "chatId" : {
+                            "type" : "number"
+                          },
+                          "mediaArray" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          },
+                          "type" : {
+                            "type" : "string"
+                          },
+                          "createdAt" : {
+                            "type" : "string"
+                          },
+                          "user" : {
+                            "type" : "object",
+                            "properties" : {
+                              "avatar" : {
+                                "type" : "string"
+                              },
+                              "profile_picture_string" : {
+                                "type" : "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "allMessages" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "message" : {
+                            "type" : "string"
+                          },
+                          "userId" : {
+                            "type" : "number"
+                          },
+                          "chatId" : {
+                            "type" : "number"
+                          },
+                          "mediaArray" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          },
+                          "type" : {
+                            "type" : "string"
+                          },
+                          "createdAt" : {
+                            "type" : "string"
+                          },
+                          "user" : {
+                            "type" : "object",
+                            "properties" : {
+                              "avatar" : {
+                                "type" : "string"
+                              },
+                              "profile_picture_string" : {
+                                "type" : "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "last_time_user_entered" : {
+                      "type" : "string",
+                      "description" : "This will be the date time of the last time a user entered a chat."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groupChats" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "groupchat" ],
+        "summary" : "Create a groupChat",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "formData",
+          "name" : "userIds",
+          "required" : true,
+          "description" : "An array of userIds. Can also be just one userId (in an array with the name userIds) if only the admin (creator) is the only user in the group when it is created",
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "formData",
+          "name" : "name",
+          "type" : "string",
+          "description" : "The name of the group chat"
+        }, {
+          "in" : "formData",
+          "name" : "adminId",
+          "description" : "The ID of the user who is creating the group chat",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "formData",
+          "name" : "mediaId",
+          "type" : "string",
+          "description" : "If the groupChat has an image assoicated with it, the media Id can be used to create that image"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the chat which was just created. The variable name of the response is chat.",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "newChannelGroupOrEvent" : {
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "integer"
+                    },
+                    "chatId" : {
+                      "type" : "integer"
+                    },
+                    "name" : {
+                      "type" : "string"
+                    },
+                    "adminId" : {
+                      "type" : "string",
+                      "description" : "The admin is the creator of the group chat. This individual has the power to kick users out of the group chat as well"
+                    },
+                    "createdAt" : {
+                      "type" : "string"
+                    },
+                    "profile_picture_string" : {
+                      "type" : "string"
+                    },
+                    "avatar" : {
+                      "type" : "string",
+                      "description" : "The url which links to amazon s3 for the groupChat profile image"
+                    }
+                  }
+                },
+                "chat" : {
+                  "type" : "object",
+                  "properties" : {
+                    "id" : {
+                      "type" : "number"
+                    },
+                    "groupChat" : {
+                      "type" : "boolean",
+                      "description" : "Set to true if the chat is a group chat"
+                    },
+                    "privateChat" : {
+                      "type" : "boolean",
+                      "description" : "Set tot true if the chat is a private chat"
+                    },
+                    "participantsId" : {
+                      "type" : "array",
+                      "description" : "An array of the user Ids participating in the chat",
+                      "items" : {
+                        "type" : "integer"
+                      },
+                      "example" : [ "22", "33" ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groupChats/{groupChatId}" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "groupchat" ],
+        "summary" : "Edit the details of a groupChat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "groupChatId",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "name" : {
+                "type" : "string"
+              },
+              "mediaId" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the updated groupChat object on success",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "groupChat" : {
+                  "$ref" : "#/definitions/GroupChat"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groupChats/{chatId}/join" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "groupchat" ],
+        "summary" : "Add user(s) to a groupChat",
+        "consumes" : [ "multipart/form-data" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "formData",
+          "name" : "userIds",
+          "required" : true,
+          "description" : "An array of userIds. Can also be just one userId (in an array with the name userIds) if only the admin (creator) is the only user in the group when it is created",
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "path",
+          "name" : "chatId",
+          "required" : true,
+          "minimum" : 1,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the chat object in which the user(s) just joined. The variable name of the response is chat.",
+            "schema" : {
+              "$ref" : "#/definitions/Chat"
+            }
+          }
+        }
+      }
+    },
+    "/groupChats/{chatId}/user/{userId}/messages" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "groupchat" ],
+        "summary" : "Get 40 messages belonging to a group chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        }, {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        }, {
+          "in" : "query",
+          "name" : "messageId",
+          "required" : false,
+          "type" : "string",
+          "description" : "Include this query parameter when you would like to get the next 40 messages following a specific message. If this query parameter is not included, you will get the 40 newest messages in order"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns all the messages associated with a specific group chat. The messages will be divided into two sections -- unread & read. In each section, the messages will be ordered from newest to oldest. The variable name of the response is messages. allMessages will be ordered from oldest to newest (for you Sung!). The client can figure out which messages are unread by comparing the createdAt attribute with the last_time_user_entered variable. This route will trigger the \"read-receipts\" socket function for the specific user querying for message history",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "messages" : {
+                  "type" : "object",
+                  "properties" : {
+                    "unread" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "message" : {
+                            "type" : "string"
+                          },
+                          "userId" : {
+                            "type" : "number"
+                          },
+                          "chatId" : {
+                            "type" : "number"
+                          },
+                          "mediaArray" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          },
+                          "files" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "object",
+                              "properties" : {
+                                "url" : {
+                                  "type" : "string"
+                                },
+                                "file_string" : {
+                                  "type" : "string"
+                                }
+                              }
+                            }
+                          },
+                          "type" : {
+                            "type" : "string"
+                          },
+                          "createdAt" : {
+                            "type" : "string"
+                          },
+                          "user" : {
+                            "type" : "object",
+                            "properties" : {
+                              "avatar" : {
+                                "type" : "string"
+                              },
+                              "profile_picture_string" : {
+                                "type" : "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "read" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "message" : {
+                            "type" : "string"
+                          },
+                          "userId" : {
+                            "type" : "number"
+                          },
+                          "chatId" : {
+                            "type" : "number"
+                          },
+                          "mediaArray" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          },
+                          "type" : {
+                            "type" : "string"
+                          },
+                          "createdAt" : {
+                            "type" : "string"
+                          },
+                          "user" : {
+                            "type" : "object",
+                            "properties" : {
+                              "avatar" : {
+                                "type" : "string"
+                              },
+                              "profile_picture_string" : {
+                                "type" : "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "allMessages" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "number"
+                          },
+                          "message" : {
+                            "type" : "string"
+                          },
+                          "userId" : {
+                            "type" : "number"
+                          },
+                          "chatId" : {
+                            "type" : "number"
+                          },
+                          "mediaArray" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "string"
+                            }
+                          },
+                          "type" : {
+                            "type" : "string"
+                          },
+                          "createdAt" : {
+                            "type" : "string"
+                          },
+                          "user" : {
+                            "type" : "object",
+                            "properties" : {
+                              "avatar" : {
+                                "type" : "string"
+                              },
+                              "profile_picture_string" : {
+                                "type" : "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "last_time_user_entered" : {
+                      "type" : "string",
+                      "description" : "This will be the date time of the last time a user entered a chat."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/groupChats/{chatId}/favorite" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "groupchat" ],
+        "summary" : "Favorite a specific group chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : true,
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "userId" : {
+                "type" : "string"
+              },
+              "trueOrFalse" : {
+                "type" : "boolean",
+                "description" : "Set to true, if you would like to make the chat a favorite. Set to false if you would like to unfavorite a chat"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the chat which was just favorited. The variable name of the response is chat.",
+            "schema" : {
+              "$ref" : "#/definitions/Chat"
+            }
+          }
+        }
+      }
+    },
+    "/messages/string" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        }, {
+          "Socket" : [ ]
+        } ],
+        "tags" : [ "message" ],
+        "summary" : "Create a message with no image attached to the message",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "post",
+          "type" : "boolean",
+          "required" : false,
+          "description" : " "
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "userId" : {
+                "type" : "string"
+              },
+              "message" : {
+                "type" : "string"
+              },
+              "chatId" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "On success, the messageInfo object will be sent to the socket functions. The variable name of the response is messageInfo",
+            "schema" : {
+              "$ref" : "#/definitions/Message"
+            }
+          },
+          "400" : {
+            "description" : "This error can occur if the chatId or userID does not exist, if the user is not a participant in the chat, or if the two users have a relationship of blocked."
+          }
+        }
+      }
+    },
+    "/messages/media" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "message" ],
+        "summary" : "Send a message with a file attatched",
+        "produces" : [ "application/json" ],
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "in" : "formData",
+          "name" : "file",
+          "description" : " ",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "formData",
+          "name" : "message",
+          "type" : "string",
+          "minimum" : 1
+        }, {
+          "in" : "formData",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "formData",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the messageInfo object. This object will be sent to the socket functions for further processing. The variable name of the response is messageInfo",
+            "schema" : {
+              "$ref" : "#/definitions/Message"
+            }
+          },
+          "400" : {
+            "description" : "This error can occur if the chatId or userId does not exist, if the user is not a participant in the chat, or if the two users have a relationship of blocked"
+          }
+        }
+      }
+    },
+    "/messages/file" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "message" ],
+        "summary" : "Send a message with a file or files",
+        "produces" : [ "application/json" ],
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "in" : "formData",
+          "name" : "file",
+          "description" : "Even if only one file is being, must be sent in an array. This format allows the server to easily handle when multiple files are being sent",
+          "required" : true,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "formData",
+          "name" : "message",
+          "type" : "string",
+          "minimum" : 1
+        }, {
+          "in" : "formData",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "formData",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the messageInfo object. This object will be sent to the socket functions for further processing. The variable name of the response is messageInfo",
+            "schema" : {
+              "$ref" : "#/definitions/Message"
+            }
+          },
+          "400" : {
+            "description" : "This error can occur if the chatId or userId does not exist, if the user is not a participant in the chat, or if the two users have a relationship of blocked"
+          }
+        }
+      }
+    },
+    "/messages/{messageId}" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "message" ],
+        "summary" : "Edit (patch) a particular message",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "messageId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1,
+          "description" : "The ID of the message one wishes to edit (patch)"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "message" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Will return the updated message on success. The variable name of the response is translatedMessages",
+            "schema" : {
+              "$ref" : "#/definitions/Message"
+            }
+          }
+        }
+      }
+    },
+    "/messages/{messageId}/user/{userId}" : {
+      "delete" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "message" ],
+        "summary" : "delete a message",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "messageId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1,
+          "description" : "The ID of the message one wishes to edit (patch)"
+        }, {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The message which was deleted will be return as the response. The variable name of the response is message. The response message, will indicate if the message was favorited or unfavorited",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "responseMsg" : {
+                  "type" : "string"
+                },
+                "message" : {
+                  "$ref" : "#/definitions/Message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/{chatId}" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "chat" ],
+        "summary" : "Get a chat by ID",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns a chat object and the response variable name is also chat",
+            "schema" : {
+              "$ref" : "#/definitions/Chat"
+            }
+          }
+        }
+      }
+    },
+    "/chat/{chatId}/file" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "chat" ],
+        "summary" : "Get all files belonging to a specific chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "minimum" : 1,
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the files which were shared in a chat",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "files" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "url" : {
+                        "type" : "string"
+                      },
+                      "file_string" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/{chatId}/media" : {
+      "get" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "chat" ],
+        "summary" : "Returns all the media files shared in a chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true,
+          "minimum" : 1
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns all the media files shared in a chat",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "mediaArray" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "media_file" : {
+                        "type" : "string"
+                      },
+                      "media_file_string" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/{chatId}/user/{userId}/notifications" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "chat" ],
+        "summary" : "Edit the notifications a user can receive from a chat",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "chatId",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "path",
+          "name" : "userId",
+          "type" : "string",
+          "required" : true
+        }, {
+          "in" : "query",
+          "name" : "user_added_notifications",
+          "type" : "boolean",
+          "required" : false
+        }, {
+          "in" : "query",
+          "name" : "message_notifications",
+          "type" : "boolean",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Returns the update userChat which includes the attribitues message_notifications and user_added_notifications which indicated the specific nofitifcation options for a specifc chat",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "success" : {
+                  "type" : "boolean"
+                },
+                "userChat" : {
+                  "$ref" : "#/definitions/UserChats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/relationships" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "relationship" ],
+        "summary" : "Create a relationship (blocked or friends) between two users. Even if a relationship is being updated, use this route",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "request_send" : {
+                "type" : "string"
+              },
+              "request_receiver" : {
+                "type" : "string"
+              },
+              "status" : {
+                "type" : "string"
+              },
+              "reportBlockedUser" : {
+                "type" : "string"
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The relationship was successfully created. The variable name of the response is relationship",
+            "schema" : {
+              "$ref" : "#/definitions/Relationship"
+            }
+          }
+        }
+      }
+    },
+    "/relationships/{userId}" : {
+      "put" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        } ],
+        "tags" : [ "relationship" ],
+        "summary" : "Change a relationship from friends to blocked or from blocked back to friends",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "userId",
+          "required" : true,
+          "type" : "string",
+          "minimum" : 1,
+          "description" : "The id of the other user"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Send over the userId's (user_id_1 & user_id_2) and the status",
+          "schema" : {
+            "$ref" : "#/definitions/Relationship"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The new relationship will be returned. The variable name of the response is relationship",
+            "schema" : {
+              "$ref" : "#/definitions/Relationship"
+            }
+          }
+        }
+      }
+    },
+    "/call/starts" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        }, {
+          "Socket" : [ ]
+        } ],
+        "tags" : [ "call" ],
+        "summary" : "New call starts.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "post",
+          "type" : "boolean",
+          "required" : true,
+          "description" : "If post is set to true, a call starts that needs to be added to the DB."
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "userId" : {
+                "type" : "string"
+              },
+              "call" : {
+                "type" : "string"
+              },
+              "chatId" : {
+                "type" : "string"
+              },
+              "createdAt" : {
+                "type" : "string",
+                "description" : "The createdAt attribute is the date time a call was created (send)."
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "On success, the messageInfo object will be sent to the socket functions. The variable name of the response is messageInfo",
+            "schema" : {
+              "$ref" : "#/definitions/Message"
+            }
+          },
+          "400" : {
+            "description" : "This error can occur if the chatId or userID does not exist, if the user is not a participant in the chat, or if the two users have a relationship of blocked"
+          }
+        }
+      }
+    },
+    "/call/ends" : {
+      "post" : {
+        "security" : [ {
+          "Authorization" : [ ]
+        }, {
+          "Socket" : [ ]
+        } ],
+        "tags" : [ "call" ],
+        "summary" : "New call starts.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "post",
+          "type" : "boolean",
+          "required" : true,
+          "description" : "If post is set to true, a call starts that needs to be added to the DB."
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "schema" : {
+            "type" : "object",
+            "properties" : {
+              "userId" : {
+                "type" : "string"
+              },
+              "call" : {
+                "type" : "string"
+              },
+              "chatId" : {
+                "type" : "string"
+              },
+              "finishedAt" : {
+                "type" : "string",
+                "description" : "The finishedAt attribute is the date time a call was finished (end)."
+              }
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "On success, the messageInfo object will be sent to the socketfunctions. The variable name of the response is messageInfo",
+            "schema" : {
+              "$ref" : "#/definitions/Message"
+            }
+          },
+          "400" : {
+            "description" : "This error can occur if the chatId or userID does not exist, if the user is not a participant in the chat, or if the two users have a relationship of blocked"
+          }
+        }
+      }
+    },
+    "/socket/user-entered-WhatsApp" : {
+      "post" : {
+        "tags" : [ "socket" ],
+        "summary" : "When a user enters WhatsApp, emit the socket function 'user-entered-WhatsApp'. The server will then emit new-and-updated-data",
+        "responses" : {
+          "200" : {
+            "description" : "The object returned will have the following properties. Also, each object will have a flag value, the flag can either be isNew or isUpdated",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "messages" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/definitions/Message"
+                  }
+                },
+                "chat" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/definitions/Chat"
+                  }
+                },
+                "groupChats" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/definitions/GroupChat"
+                  }
+                },
+                "users" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/definitions/User"
+                  }
+                },
+                "calls" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/definitions/User"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "When an error occuring while retrieving any section of the data, I will send back an error within the object",
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "messages" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "stack" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                },
+                "chat" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "stack" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                },
+                "groupChats" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "object",
+                    "properties" : {
+                      "message" : {
+                        "type" : "string"
+                      },
+                      "stack" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "User" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "number",
+          "description" : "Unique identifer"
+        },
+        "first_name" : {
+          "type" : "string"
+        },
+        "last_name" : {
+          "type" : "string"
+        },
+        "phone" : {
+          "type" : "string"
+        },
+        "country_code" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "profile_picture_string" : {
+          "type" : "string"
+        },
+        "avatar" : {
+          "type" : "string"
+        },
+        "verified" : {
+          "type" : "boolean"
+        },
+        "passcode" : {
+          "type" : "string"
+        },
+        "passcode_expiration" : {
+          "type" : "string"
+        },
+        "socket_id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Relationship" : {
+      "type" : "object",
+      "properties" : {
+        "request_sender" : {
+          "type" : "string",
+          "description" : "foreign key of one user"
+        },
+        "request_receiver" : {
+          "type" : "string",
+          "description" : "foreign key of another user"
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "Either friends or blocked"
+        }
+      }
+    },
+    "Media" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "number"
+        },
+        "media_file_string" : {
+          "type" : "string",
+          "description" : "In the media table, there is a getter function which retrieves the AWS bucket file which this media object is assoicated with"
+        },
+        "media_file" : {
+          "type" : "string",
+          "description" : "The URL which the file can be uploaded from"
+        },
+        "user_id" : {
+          "type" : "number"
+        },
+        "groupChatId" : {
+          "type" : "number"
+        }
+      }
+    },
+    "Chat" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "number"
+        },
+        "groupChat" : {
+          "type" : "boolean",
+          "description" : "Set to true if the chat is a group chat"
+        },
+        "privateChat" : {
+          "type" : "boolean",
+          "description" : "Set tot true if the chat is a private chat"
+        },
+        "participantsId" : {
+          "type" : "array",
+          "description" : "An array of the user Ids participating in the chat",
+          "items" : {
+            "type" : "integer"
+          },
+          "example" : [ "22", "33" ]
+        },
+        "last_activity" : {
+          "type" : "string"
+        },
+        "last_activity_in_associated_channel_event_or_groupChat" : {
+          "type" : "string"
+        }
+      }
+    },
+    "UserChats" : {
+      "type" : "object",
+      "properties" : {
+        "userId" : {
+          "type" : "string"
+        },
+        "chatId" : {
+          "type" : "string"
+        },
+        "favorite" : {
+          "type" : "boolean"
+        },
+        "last_time_in_chat" : {
+          "type" : "string"
+        },
+        "unread_messages" : {
+          "type" : "boolean"
+        },
+        "entered_chat_quantity" : {
+          "type" : "number"
+        },
+        "current_chat" : {
+          "type" : "boolean"
+        },
+        "message_notifications" : {
+          "type" : "boolean"
+        },
+        "user_added_notifications" : {
+          "type" : "boolean"
+        },
+        "read_receipt" : {
+          "type" : "boolean"
+        },
+        "messages_not_to_display" : {
+          "type" : "array",
+          "items" : {
+            "type" : "number",
+            "description" : "The message ID's which will not be displayed to a user because they were self-destructing messages"
+          },
+          "example" : [ 50, 100, 150 ]
+        }
+      }
+    },
+    "Message" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "number"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "chatId" : {
+          "type" : "string"
+        },
+        "userId" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "example" : "media, string"
+        },
+        "createdAt" : {
+          "type" : "string",
+          "description" : "The date time of when the message was created (sent)"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The full name of the user who sent the message"
+        },
+        "post" : {
+          "type" : "boolean"
+        },
+        "user" : {
+          "type" : "object",
+          "properties" : {
+            "avatar" : {
+              "type" : "string"
+            },
+            "profile_picture_string" : {
+              "type" : "string"
+            }
+          }
+        },
+        "GroupChat" : {
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "type" : "number",
+              "description" : "Unique identifer"
+            },
+            "first_name" : {
+              "type" : "string"
+            },
+            "last_name" : {
+              "type" : "string"
+            },
+            "phone" : {
+              "type" : "string"
+            },
+            "country_code" : {
+              "type" : "string"
+            },
+            "email" : {
+              "type" : "string"
+            },
+            "profile_picture_string" : {
+              "type" : "string"
+            },
+            "avatar" : {
+              "type" : "string"
+            },
+            "position" : {
+              "type" : "object"
+            },
+            "verified" : {
+              "type" : "boolean"
+            },
+            "passcode" : {
+              "type" : "string"
+            },
+            "passcode_expiration" : {
+              "type" : "string"
+            },
+            "socket_id" : {
+              "type" : "string"
+            }
+          }
+        },
+        "mediaArray" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "media_file_string" : {
+                "type" : "string"
+              },
+              "media_file" : {
+                "type" : "string",
+                "description" : "The url of the link to the file"
+              }
+            }
+          }
+        },
+        "files" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "file_string" : {
+                "type" : "string"
+              },
+              "s3_url" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "GroupChat" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer"
+        },
+        "chatId" : {
+          "type" : "integer"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "adminId" : {
+          "type" : "string",
+          "description" : "The admin is the creator of the group chat. This individual has the power to kick users out of the group chat as well"
+        },
+        "createdAt" : {
+          "type" : "string"
+        },
+        "profile_picture_string" : {
+          "type" : "string"
+        },
+        "avatar" : {
+          "type" : "string",
+          "description" : "The url which links to amazon s3 for the groupChat profile image"
+        }
+      }
+    }
+  },
+  "host" : "virtserver.swaggerhub.com",
+  "basePath" : "/asterakia/WhatsApp/1.0.0",
+  "schemes" : [ "https" ]
+}
